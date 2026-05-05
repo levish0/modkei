@@ -10,7 +10,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: crates/modkei-report/ui
+        working-directory: modkei-ui
 
     steps:
       - name: Checkout code
@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: crates/modkei-report/ui/.nvmrc
+          node-version-file: modkei-ui/.nvmrc
 
       - name: Install pnpm
         run: npm install -g pnpm

@@ -16,7 +16,6 @@
 	import { Slider } from '$lib/components/ui/slider';
 	import { Switch } from '$lib/components/ui/switch';
 	import { Icon, ChevronRight, MagnifyingGlass } from 'svelte-hero-icons';
-	import generatedGraphData from '$lib/generated/graph-data.json';
 
 	type Language =
 		| 'Rust'
@@ -122,9 +121,11 @@
 
 	// ── Lifecycle ──────────────────────────────────────────────────────────────
 
-	onMount(() => {
+	onMount(async () => {
 		try {
-			graphData = generatedGraphData as GraphData;
+			const res = await fetch('/api/graph-data.json');
+			if (!res.ok) throw new Error('Failed to fetch graph data');
+			graphData = await res.json();
 			initGraph(graphData);
 		} catch (err) {
 			error = err instanceof Error ? err.message : String(err);

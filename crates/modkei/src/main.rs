@@ -18,10 +18,7 @@ struct Cli {
     #[arg(default_value = ".")]
     path: PathBuf,
 
-    /// Output HTML report path.
-    #[arg(long, default_value = "modkei-report.html")]
-    output: PathBuf,
-
+    // Output arg removed because we serve directly from memory
     /// Skip opening the browser after scan.
     #[arg(long)]
     no_open: bool,
@@ -99,13 +96,7 @@ fn main() -> Result<()> {
         scan.graph.edges.len()
     );
 
-    modkei_report::generate(&scan.graph, &cli.output)?;
-    println!("Report: {}", cli.output.display());
-
-    if !cli.no_open {
-        let url = modkei_report::serve_and_open(&cli.output)?;
-        println!("Opened report at {url}.");
-    }
+    modkei_report::generate_and_serve(&scan.graph, cli.no_open)?;
 
     if scanned_files != scan.files.len() {
         eprintln!(

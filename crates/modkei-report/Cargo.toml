@@ -13,3 +13,6 @@ modkei-core.workspace = true
 open.workspace = true
 serde_json.workspace = true
 ctrlc.workspace = true
+tiny_http.workspace = true
+rust-embed.workspace = true
+mime_guess.workspace = true
