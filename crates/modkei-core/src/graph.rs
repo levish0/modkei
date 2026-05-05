@@ -108,7 +108,7 @@ fn resolve_import(
             let path = raw.strip_prefix("include:")?;
             // Usually, includes already have the extension (.h, .hpp), so we just join it.
             // If it starts with a common directory (e.g. include/ or src/), it's usually relative to workspace root or current dir.
-            let mut candidates = vec![
+            let candidates = vec![
                 from.parent()?.join(path),
                 root.join(path),
                 root.join("include").join(path),

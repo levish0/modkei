@@ -1,6 +1,5 @@
 use tree_sitter::Node;
 
-use super::collect_string_literals;
 
 pub fn extract(root: Node<'_>, bytes: &[u8]) -> Vec<String> {
     let mut imports = Vec::new();
@@ -14,7 +13,7 @@ pub fn extract(root: Node<'_>, bytes: &[u8]) -> Vec<String> {
             let mut import_cursor = node.walk();
             for child in node.children(&mut import_cursor) {
                 if child.kind() == "scoped_identifier" || child.kind() == "identifier" {
-                    let mut val = super::text(child, bytes).trim();
+                    let val = super::text(child, bytes).trim();
                     imports.push(format!("module:{}", val));
                 }
             }

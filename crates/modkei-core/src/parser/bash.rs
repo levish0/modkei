@@ -1,6 +1,5 @@
 use tree_sitter::Node;
 
-use super::collect_string_literals;
 
 pub fn extract(root: Node<'_>, bytes: &[u8]) -> Vec<String> {
     let mut imports = Vec::new();
