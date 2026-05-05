@@ -3,7 +3,7 @@
 Rust CLI for code statistics and file dependency graphs.
 
 `modkei` scans a source directory, shows live per-language stats in the terminal,
-and writes a standalone interactive Sigma.js HTML graph of file imports.
+and writes an interactive HTML graph of file imports.
 
 ## Usage
 
@@ -20,9 +20,6 @@ cargo run -p modkei --
 cargo run -p modkei -- ./src --output graph.html
 cargo run -p modkei -- . --no-open
 ```
-
-After scanning completes, press `o` or `g` in the TUI to open the graph again.
-Press `q` or `Esc` to quit.
 
 ## Options
 
@@ -41,12 +38,11 @@ Rust, TypeScript, JavaScript, Python, and Go.
 
 ## Output
 
-- Terminal: live language table with files, lines, code, comments, and blanks.
-- HTML: standalone Graphology/Sigma.js graph loaded from CDN with embedded graph JSON.
+- Terminal: progress spinner followed by a language table with files, lines, code, comments, and blanks.
+- HTML: static Svelte/Sigma graph with embedded graph JSON, plus a `graph.json` sidecar for preview/dev use.
 
 ## Architecture
 
 The workspace is split into `modkei-core` for scanning/parsing/graph data,
-`modkei-tui` for the Ratatui interface, `modkei-report` for HTML generation,
-and `modkei` for CLI orchestration. The implementation is synchronous and uses
-Rayon plus channels, with no async runtime.
+`modkei-report` for static report generation, and `modkei` for CLI orchestration.
+The implementation is synchronous and uses Rayon plus channels, with no async runtime.

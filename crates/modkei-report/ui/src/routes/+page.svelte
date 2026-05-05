@@ -17,6 +17,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import { Slider } from '$lib/components/ui/slider';
 	import { Switch } from '$lib/components/ui/switch';
+	import generatedGraphData from '$lib/generated/graph-data.json';
 	import * as Tabs from '$lib/components/ui/tabs';
 
 	type Language = 'Rust' | 'TypeScript' | 'JavaScript' | 'Python' | 'Go' | 'Unknown';
@@ -86,9 +87,7 @@
 
 	onMount(async () => {
 		try {
-			const response = await fetch('./graph.json');
-			if (!response.ok) throw new Error(`failed to load graph.json (${response.status})`);
-			graphData = (await response.json()) as GraphData;
+			graphData = generatedGraphData as GraphData;
 			initGraph(graphData);
 		} catch (err) {
 			error = err instanceof Error ? err.message : String(err);
