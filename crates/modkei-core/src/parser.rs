@@ -3,7 +3,6 @@ mod cmake;
 mod cpp;
 mod go;
 mod java;
-mod kotlin;
 mod make;
 mod python;
 mod rust;
@@ -33,7 +32,6 @@ pub fn extract_imports(source: &str, language: Language) -> Vec<String> {
         Language::Go => go::extract(tree.root_node(), source.as_bytes()),
         Language::C | Language::Cpp => cpp::extract(tree.root_node(), source.as_bytes()),
         Language::Java => java::extract(tree.root_node(), source.as_bytes()),
-        Language::Kotlin => kotlin::extract(tree.root_node(), source.as_bytes()),
         Language::Bash => bash::extract(tree.root_node(), source.as_bytes()),
         Language::Make => make::extract(tree.root_node(), source.as_bytes()),
         Language::CMake => cmake::extract(tree.root_node(), source.as_bytes()),

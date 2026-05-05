@@ -13,7 +13,6 @@ pub enum Language {
     C,
     Cpp,
     Java,
-    Kotlin,
     Bash,
     Make,
     CMake,
@@ -31,7 +30,6 @@ impl Language {
             Some("c" | "h") => Self::C,
             Some("cpp" | "cxx" | "cc" | "hpp" | "hxx") => Self::Cpp,
             Some("java") => Self::Java,
-            Some("kt" | "kts") => Self::Kotlin,
             Some("sh" | "bash" | "zsh") => Self::Bash,
             Some("mk") => Self::Make,
             Some("cmake") => Self::CMake,
@@ -49,7 +47,6 @@ impl Language {
             Self::C => "C",
             Self::Cpp => "C++",
             Self::Java => "Java",
-            Self::Kotlin => "Kotlin",
             Self::Bash => "Bash",
             Self::Make => "Makefile",
             Self::CMake => "CMake",
@@ -68,7 +65,6 @@ impl Language {
             Self::C => Some(tree_sitter_c::LANGUAGE.into()),
             Self::Cpp => Some(tree_sitter_cpp::LANGUAGE.into()),
             Self::Java => Some(tree_sitter_java::LANGUAGE.into()),
-            Self::Kotlin => None, // Temporarily disabled due to tree-sitter version conflict
             Self::Bash => Some(tree_sitter_bash::LANGUAGE.into()),
             Self::Make => Some(tree_sitter_make::LANGUAGE.into()),
             Self::CMake => Some(tree_sitter_cmake::LANGUAGE.into()),
@@ -78,14 +74,7 @@ impl Language {
 
     pub(crate) fn comment_syntax(self) -> CommentSyntax {
         match self {
-            Self::Rust
-            | Self::TypeScript
-            | Self::JavaScript
-            | Self::Go
-            | Self::C
-            | Self::Cpp
-            | Self::Java
-            | Self::Kotlin => CommentSyntax {
+            Self::Rust | Self::TypeScript | Self::JavaScript | Self::Go | Self::C | Self::Cpp | Self::Java => CommentSyntax {
                 line: &["//"],
                 block: &[("/*", "*/")],
             },

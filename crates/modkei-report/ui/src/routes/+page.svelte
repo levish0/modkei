@@ -18,7 +18,7 @@
 	import { Icon, ChevronRight, MagnifyingGlass } from 'svelte-hero-icons';
 	import generatedGraphData from '$lib/generated/graph-data.json';
 
-	type Language = 'Rust' | 'TypeScript' | 'JavaScript' | 'Python' | 'Go' | 'C' | 'C++' | 'Java' | 'Kotlin' | 'Bash' | 'Makefile' | 'CMake' | 'Unknown';
+	type Language = 'Rust' | 'TypeScript' | 'JavaScript' | 'Python' | 'Go' | 'C' | 'C++' | 'Java' | 'Bash' | 'Makefile' | 'CMake' | 'Unknown';
 	type GraphNode = { id: string; label: string; language: Language; lines: number; code: number };
 	type GraphEdge = { source: string; target: string; label: string };
 	type GraphData = { nodes: GraphNode[]; edges: GraphEdge[] };
@@ -35,7 +35,6 @@
 		C: '#8b9ebd',
 		'C++': '#6296cc',
 		Java: '#b07219',
-		Kotlin: '#a97bff',
 		Bash: '#89e051',
 		Makefile: '#427819',
 		CMake: '#da3434',
