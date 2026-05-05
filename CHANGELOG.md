@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] - 2025-05-06
+Bump workspace and member crate versions to 0.1.1 and update package metadata. Adds keywords and categories to the workspace Cargo.toml and enables description/readme/keywords/categories workspace fields for modkei-core, modkei-report, and modkei to populate crate metadata (including brief descriptions for core and report). Cargo.lock updated to reflect the new versions.
+
 ## [0.1.0] - 2026-05-06
 
 ### Added
