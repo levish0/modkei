@@ -18,16 +18,14 @@ readme = "README.md"
 # Internal crates
 modkei-core = { path = "crates/modkei-core" }
 modkei-report = { path = "crates/modkei-report" }
-modkei-tui = { path = "crates/modkei-tui" }
 
 # External dependencies
 anyhow = "1.0.102"
-ratatui = "0.30.0"
-crossterm = "0.29.0"
 clap = { version = "4.6.1", features = ["derive"] }
 ignore = "0.4.25"
 rayon = "1.12.0"
 crossbeam-channel = "0.5.15"
+indicatif = "0.18.4"
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.149"
 tree-sitter = "0.26.8"
