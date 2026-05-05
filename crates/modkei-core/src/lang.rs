@@ -10,6 +10,13 @@ pub enum Language {
     Python,
     Go,
     JavaScript,
+    C,
+    Cpp,
+    Java,
+    Kotlin,
+    Bash,
+    Make,
+    CMake,
     Unknown,
 }
 
@@ -21,6 +28,13 @@ impl Language {
             Some("js" | "jsx" | "mjs" | "cjs") => Self::JavaScript,
             Some("py") => Self::Python,
             Some("go") => Self::Go,
+            Some("c" | "h") => Self::C,
+            Some("cpp" | "cxx" | "cc" | "hpp" | "hxx") => Self::Cpp,
+            Some("java") => Self::Java,
+            Some("kt" | "kts") => Self::Kotlin,
+            Some("sh" | "bash" | "zsh") => Self::Bash,
+            Some("mk") => Self::Make,
+            Some("cmake") => Self::CMake,
             _ => Self::Unknown,
         }
     }
@@ -32,6 +46,13 @@ impl Language {
             Self::Python => "Python",
             Self::Go => "Go",
             Self::JavaScript => "JavaScript",
+            Self::C => "C",
+            Self::Cpp => "C++",
+            Self::Java => "Java",
+            Self::Kotlin => "Kotlin",
+            Self::Bash => "Bash",
+            Self::Make => "Makefile",
+            Self::CMake => "CMake",
             Self::Unknown => "Unknown",
         }
     }
@@ -44,17 +65,31 @@ impl Language {
             }
             Self::Python => Some(tree_sitter_python::LANGUAGE.into()),
             Self::Go => Some(tree_sitter_go::LANGUAGE.into()),
+            Self::C => Some(tree_sitter_c::LANGUAGE.into()),
+            Self::Cpp => Some(tree_sitter_cpp::LANGUAGE.into()),
+            Self::Java => Some(tree_sitter_java::LANGUAGE.into()),
+            Self::Kotlin => None, // Temporarily disabled due to tree-sitter version conflict
+            Self::Bash => Some(tree_sitter_bash::LANGUAGE.into()),
+            Self::Make => Some(tree_sitter_make::LANGUAGE.into()),
+            Self::CMake => Some(tree_sitter_cmake::LANGUAGE.into()),
             Self::Unknown => None,
         }
     }
 
     pub(crate) fn comment_syntax(self) -> CommentSyntax {
         match self {
-            Self::Rust | Self::TypeScript | Self::JavaScript | Self::Go => CommentSyntax {
+            Self::Rust
+            | Self::TypeScript
+            | Self::JavaScript
+            | Self::Go
+            | Self::C
+            | Self::Cpp
+            | Self::Java
+            | Self::Kotlin => CommentSyntax {
                 line: &["//"],
                 block: &[("/*", "*/")],
             },
-            Self::Python => CommentSyntax {
+            Self::Python | Self::Bash | Self::Make | Self::CMake => CommentSyntax {
                 line: &["#"],
                 block: &[],
             },

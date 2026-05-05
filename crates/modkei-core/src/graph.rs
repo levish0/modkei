@@ -85,6 +85,7 @@ fn display_import_label(raw: &str) -> String {
     raw.strip_prefix("module:")
         .or_else(|| raw.strip_prefix("mod:"))
         .or_else(|| raw.strip_prefix("use:"))
+        .or_else(|| raw.strip_prefix("include:"))
         .unwrap_or(raw)
         .to_string()
 }
@@ -103,6 +104,20 @@ fn resolve_import(
         Language::Python => module::resolve_python(from, raw, root, rel_set),
         Language::Rust => rust::resolve(root, from, raw, rel_set),
         Language::Go => module::resolve_go(raw, rel_set),
+        Language::C | Language::Cpp => {
+            let path = raw.strip_prefix("include:")?;
+            // Usually, includes already have the extension (.h, .hpp), so we just join it.
+            // If it starts with a common directory (e.g. include/ or src/), it's usually relative to workspace root or current dir.
+            let mut candidates = vec![
+                from.parent()?.join(path),
+                root.join(path),
+                root.join("include").join(path),
+                root.join("src").join(path),
+            ];
+            candidates.into_iter().find_map(|c| {
+                resolve_candidate(root, &c, rel_set, &["h", "hpp", "c", "cpp", "cxx", "cc"])
+            })
+        }
         Language::Unknown => None,
     }
 }

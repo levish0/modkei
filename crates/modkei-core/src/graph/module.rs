@@ -25,7 +25,22 @@ pub fn resolve_python(
 ) -> Option<String> {
     let module = raw.strip_prefix("module:")?;
     if module.starts_with('.') {
-        return resolve_relative(from, raw, root, rel_set, &["py"]);
+        // Python relative imports: count leading dots
+        let dots = module.chars().take_while(|c| *c == '.').count();
+        let rest = &module[dots..];
+
+        let mut base = from.parent()?;
+        for _ in 1..dots {
+            base = base.parent()?;
+        }
+
+        let candidate = if rest.is_empty() {
+            base.to_path_buf()
+        } else {
+            base.join(rest.replace('.', "/"))
+        };
+
+        return resolve_candidate(root, &candidate, rel_set, &["py"]);
     }
     resolve_candidate(root, Path::new(&module.replace('.', "/")), rel_set, &["py"])
 }

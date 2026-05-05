@@ -8,18 +8,22 @@ pub fn extract(root: Node<'_>, bytes: &[u8]) -> Vec<String> {
     imports
 }
 
-fn collect(node: Node<'_>, bytes: &[u8], imports: &mut Vec<String>) {
-    match node.kind() {
-        "mod_item" if text(node, bytes).trim().ends_with(';') => {
-            collect_mod_target(node, bytes, imports)
-        }
-        "use_declaration" => collect_use_targets(node, bytes, imports),
-        _ => {}
-    }
+fn collect(root: Node<'_>, bytes: &[u8], imports: &mut Vec<String>) {
+    let mut stack = vec![root];
+    let mut cursor = root.walk();
 
-    let mut cursor = node.walk();
-    for child in node.children(&mut cursor) {
-        collect(child, bytes, imports);
+    while let Some(node) = stack.pop() {
+        match node.kind() {
+            "mod_item" if text(node, bytes).trim().ends_with(';') => {
+                collect_mod_target(node, bytes, imports)
+            }
+            "use_declaration" => collect_use_targets(node, bytes, imports),
+            _ => {}
+        }
+
+        for child in node.children(&mut cursor) {
+            stack.push(child);
+        }
     }
 }
 

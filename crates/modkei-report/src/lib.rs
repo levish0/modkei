@@ -4,8 +4,8 @@ use std::{
     path::{Path, PathBuf},
     process::{Command, Stdio},
     sync::{
-        atomic::{AtomicBool, Ordering},
         Arc,
+        atomic::{AtomicBool, Ordering},
     },
     thread,
     time::Duration,
@@ -123,15 +123,19 @@ pub fn serve_and_open(path: &Path) -> Result<String> {
     let port = available_port()?;
     let npx = if cfg!(windows) { "npx.cmd" } else { "npx" };
     let mut child = Command::new(npx)
-        .args(["-y", "serve", "--listen", &port.to_string(), "--no-clipboard"])
+        .args([
+            "-y",
+            "serve",
+            "--listen",
+            &port.to_string(),
+            "--no-clipboard",
+        ])
         .arg(&serve_dir)
         .stdin(Stdio::null())
         .stdout(Stdio::null())
         .stderr(Stdio::null())
         .spawn()
-        .with_context(|| {
-            format!("failed to start preview server for {}", serve_dir.display())
-        })?;
+        .with_context(|| format!("failed to start preview server for {}", serve_dir.display()))?;
 
     // Give npx time to download `serve` on first run and bind the port.
     thread::sleep(Duration::from_millis(1400));
@@ -163,8 +167,9 @@ fn copy_static_assets(source: &Path, destination: &Path) -> Result<()> {
                 .with_context(|| format!("failed to create {}", dst.display()))?;
             copy_static_assets(&src, &dst)?;
         } else {
-            fs::copy(&src, &dst)
-                .with_context(|| format!("failed to copy {} to {}", src.display(), dst.display()))?;
+            fs::copy(&src, &dst).with_context(|| {
+                format!("failed to copy {} to {}", src.display(), dst.display())
+            })?;
         }
     }
     Ok(())

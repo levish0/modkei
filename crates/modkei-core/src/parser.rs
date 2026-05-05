@@ -1,4 +1,10 @@
+mod bash;
+mod cmake;
+mod cpp;
 mod go;
+mod java;
+mod kotlin;
+mod make;
 mod python;
 mod rust;
 mod typescript;
@@ -25,6 +31,12 @@ pub fn extract_imports(source: &str, language: Language) -> Vec<String> {
         }
         Language::Python => python::extract(tree.root_node(), source.as_bytes()),
         Language::Go => go::extract(tree.root_node(), source.as_bytes()),
+        Language::C | Language::Cpp => cpp::extract(tree.root_node(), source.as_bytes()),
+        Language::Java => java::extract(tree.root_node(), source.as_bytes()),
+        Language::Kotlin => kotlin::extract(tree.root_node(), source.as_bytes()),
+        Language::Bash => bash::extract(tree.root_node(), source.as_bytes()),
+        Language::Make => make::extract(tree.root_node(), source.as_bytes()),
+        Language::CMake => cmake::extract(tree.root_node(), source.as_bytes()),
         Language::Unknown => Vec::new(),
     };
     imports.retain(|item| !item.is_empty());
@@ -34,19 +46,24 @@ pub fn extract_imports(source: &str, language: Language) -> Vec<String> {
 }
 
 pub(super) fn collect_string_literals(
-    node: Node<'_>,
+    root: Node<'_>,
     bytes: &[u8],
     imports: &mut Vec<String>,
     prefix: &str,
 ) {
-    let mut cursor = node.walk();
-    for child in node.children(&mut cursor) {
-        match child.kind() {
-            "string_fragment" => imports.push(format!("{prefix}{}", text(child, bytes))),
+    let mut stack = vec![root];
+    let mut cursor = root.walk();
+    while let Some(node) = stack.pop() {
+        match node.kind() {
+            "string_fragment" => imports.push(format!("{prefix}{}", text(node, bytes))),
             "interpreted_string_literal" | "raw_string_literal" | "string" => {
-                imports.push(format!("{prefix}{}", unquote(text(child, bytes))));
+                imports.push(format!("{prefix}{}", unquote(text(node, bytes))));
             }
-            _ => collect_string_literals(child, bytes, imports, prefix),
+            _ => {
+                for child in node.children(&mut cursor) {
+                    stack.push(child);
+                }
+            }
         }
     }
 }

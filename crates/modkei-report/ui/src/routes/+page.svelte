@@ -18,7 +18,7 @@
 	import { Icon, ChevronRight, MagnifyingGlass } from 'svelte-hero-icons';
 	import generatedGraphData from '$lib/generated/graph-data.json';
 
-	type Language = 'Rust' | 'TypeScript' | 'JavaScript' | 'Python' | 'Go' | 'Unknown';
+	type Language = 'Rust' | 'TypeScript' | 'JavaScript' | 'Python' | 'Go' | 'C' | 'C++' | 'Java' | 'Kotlin' | 'Bash' | 'Makefile' | 'CMake' | 'Unknown';
 	type GraphNode = { id: string; label: string; language: Language; lines: number; code: number };
 	type GraphEdge = { source: string; target: string; label: string };
 	type GraphData = { nodes: GraphNode[]; edges: GraphEdge[] };
@@ -32,6 +32,13 @@
 		JavaScript: '#d4b84a',
 		Python: '#d4a44a',
 		Go: '#3abecc',
+		C: '#8b9ebd',
+		'C++': '#6296cc',
+		Java: '#b07219',
+		Kotlin: '#a97bff',
+		Bash: '#89e051',
+		Makefile: '#427819',
+		CMake: '#da3434',
 		Unknown: '#9aa3b2'
 	};
 	// Default node colour in Obsidian style (light gray dot)
