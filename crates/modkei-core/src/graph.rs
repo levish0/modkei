@@ -118,7 +118,9 @@ fn resolve_import(
                 resolve_candidate(root, &c, rel_set, &["h", "hpp", "c", "cpp", "cxx", "cc"])
             })
         }
-        Language::Unknown | Language::Java | Language::Bash | Language::Make | Language::CMake => None,
+        Language::Unknown | Language::Java | Language::Bash | Language::Make | Language::CMake => {
+            None
+        }
     }
 }
 

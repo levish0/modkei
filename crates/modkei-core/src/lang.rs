@@ -74,7 +74,13 @@ impl Language {
 
     pub(crate) fn comment_syntax(self) -> CommentSyntax {
         match self {
-            Self::Rust | Self::TypeScript | Self::JavaScript | Self::Go | Self::C | Self::Cpp | Self::Java => CommentSyntax {
+            Self::Rust
+            | Self::TypeScript
+            | Self::JavaScript
+            | Self::Go
+            | Self::C
+            | Self::Cpp
+            | Self::Java => CommentSyntax {
                 line: &["//"],
                 block: &[("/*", "*/")],
             },
