@@ -12,3 +12,4 @@ anyhow.workspace = true
 modkei-core.workspace = true
 open.workspace = true
 serde_json.workspace = true
+ctrlc.workspace = true

@@ -24,3 +24,5 @@ rustc-ice-*.txt
 .idea/
 
 reference
+modkei-report-assets/
+modkei-report-files/

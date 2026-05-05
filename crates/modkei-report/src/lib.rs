@@ -3,6 +3,10 @@ use std::{
     net::TcpListener,
     path::{Path, PathBuf},
     process::{Command, Stdio},
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Arc,
+    },
     thread,
     time::Duration,
 };
@@ -35,7 +39,6 @@ fn write_generated_graph(graph: &GraphData) -> Result<()> {
         fs::create_dir_all(parent)
             .with_context(|| format!("failed to create {}", parent.display()))?;
     }
-
     let json = serde_json::to_vec_pretty(graph)?;
     fs::write(graph_path, json)
         .with_context(|| format!("failed to write {}", graph_path.display()))?;
@@ -48,18 +51,30 @@ fn build_ui() -> Result<()> {
         fs::remove_dir_all(&output_dir)
             .with_context(|| format!("failed to remove {}", output_dir.display()))?;
     }
-
     let pnpm = if cfg!(windows) { "pnpm.cmd" } else { "pnpm" };
     let status = Command::new(pnpm)
         .arg("build")
         .current_dir(UI_DIR)
         .status()
         .with_context(|| format!("failed to run `pnpm build` in {UI_DIR}"))?;
-
     if !status.success() {
         bail!("`pnpm build` failed in {UI_DIR}");
     }
     Ok(())
+}
+
+/// Returns the self-contained directory for the built report assets.
+/// Named `<stem>-files/` next to the output HTML so the project root stays clean.
+fn report_serve_dir(output_path: &Path) -> PathBuf {
+    let stem = output_path
+        .file_stem()
+        .and_then(|s| s.to_str())
+        .unwrap_or("modkei-report");
+    let parent = output_path
+        .parent()
+        .filter(|p| !p.as_os_str().is_empty())
+        .unwrap_or_else(|| Path::new("."));
+    parent.join(format!("{stem}-files"))
 }
 
 fn copy_report(output_path: &Path) -> Result<()> {
@@ -71,65 +86,68 @@ fn copy_report(output_path: &Path) -> Result<()> {
         );
     }
 
-    let output_dir = output_path
-        .parent()
-        .filter(|path| !path.as_os_str().is_empty())
-        .unwrap_or_else(|| Path::new("."));
-    fs::create_dir_all(output_dir)
-        .with_context(|| format!("failed to create {}", output_dir.display()))?;
-    copy_static_assets(Path::new(STATIC_REPORT_DIR), output_dir)?;
-    fs::copy(&index_path, output_path)
+    // Copy everything (index.html + _app/ + robots.txt …) into the self-contained
+    // serve dir.  Because index.html and _app/ are siblings there, no path
+    // rewriting is needed — the relative imports just work.
+    let serve_dir = report_serve_dir(output_path);
+    fs::create_dir_all(&serve_dir)
+        .with_context(|| format!("failed to create {}", serve_dir.display()))?;
+    copy_static_assets(Path::new(STATIC_REPORT_DIR), &serve_dir)?;
+
+    // Write a thin redirect at the user-visible output path so double-clicking
+    // it in a file manager still opens the report.
+    let stem = output_path
+        .file_stem()
+        .and_then(|s| s.to_str())
+        .unwrap_or("modkei-report");
+    let redirect = format!(
+        "<!doctype html><html><head>\
+         <meta http-equiv=\"refresh\" content=\"0;url=./{stem}-files/\"/>\
+         </head><body></body></html>"
+    );
+    if let Some(p) = output_path.parent().filter(|p| !p.as_os_str().is_empty()) {
+        fs::create_dir_all(p).with_context(|| format!("failed to create {}", p.display()))?;
+    }
+    fs::write(output_path, redirect)
         .with_context(|| format!("failed to write {}", output_path.display()))?;
     Ok(())
 }
 
 pub fn serve_and_open(path: &Path) -> Result<String> {
-    let output_dir = path
-        .parent()
-        .filter(|path| !path.as_os_str().is_empty())
-        .unwrap_or_else(|| Path::new("."))
+    // Serve the self-contained `<stem>-files/` directory directly so that
+    // index.html and _app/ share the same root — no URL path confusion.
+    let serve_dir = report_serve_dir(path)
         .canonicalize()
-        .with_context(|| format!("failed to resolve report directory for {}", path.display()))?;
-    let file_name = path
-        .file_name()
-        .and_then(|name| name.to_str())
-        .unwrap_or("index.html");
-    let port = available_port()?;
+        .with_context(|| format!("failed to resolve serve directory for {}", path.display()))?;
 
-    let pnpm = if cfg!(windows) { "pnpm.cmd" } else { "pnpm" };
-    Command::new(pnpm)
-        .args([
-            "exec",
-            "vite",
-            "preview",
-            "--host",
-            "127.0.0.1",
-            "--port",
-            &port.to_string(),
-            "--strictPort",
-            "--outDir",
-        ])
-        .arg(&output_dir)
-        .args(["--logLevel", "error"])
-        .current_dir(UI_DIR)
+    let port = available_port()?;
+    let npx = if cfg!(windows) { "npx.cmd" } else { "npx" };
+    let mut child = Command::new(npx)
+        .args(["-y", "serve", "--listen", &port.to_string(), "--no-clipboard"])
+        .arg(&serve_dir)
         .stdin(Stdio::null())
         .stdout(Stdio::null())
         .stderr(Stdio::null())
         .spawn()
         .with_context(|| {
-            format!(
-                "failed to start preview server for {}",
-                output_dir.display()
-            )
+            format!("failed to start preview server for {}", serve_dir.display())
         })?;
 
-    thread::sleep(Duration::from_millis(700));
-    let url = if file_name == "index.html" {
-        format!("http://127.0.0.1:{port}/")
-    } else {
-        format!("http://127.0.0.1:{port}/{}", url_path_segment(file_name))
-    };
+    // Give npx time to download `serve` on first run and bind the port.
+    thread::sleep(Duration::from_millis(1400));
+    let url = format!("http://127.0.0.1:{port}/");
     open::that(&url).with_context(|| format!("failed to open {url}"))?;
+
+    // Block until Ctrl+C so the child server process stays alive.
+    let running = Arc::new(AtomicBool::new(true));
+    let r = running.clone();
+    ctrlc::set_handler(move || r.store(false, Ordering::SeqCst))
+        .context("failed to set Ctrl+C handler")?;
+    eprintln!("Serving report at {url}  (press Ctrl+C to stop)");
+    while running.load(Ordering::SeqCst) {
+        thread::sleep(Duration::from_millis(200));
+    }
+    let _ = child.kill();
     Ok(url)
 }
 
@@ -138,31 +156,18 @@ fn copy_static_assets(source: &Path, destination: &Path) -> Result<()> {
         fs::read_dir(source).with_context(|| format!("failed to read {}", source.display()))?
     {
         let entry = entry?;
-        let source_path = entry.path();
-        let destination_path = destination.join(entry.file_name());
-        if source_path.is_dir() {
-            fs::create_dir_all(&destination_path)
-                .with_context(|| format!("failed to create {}", destination_path.display()))?;
-            copy_static_assets(&source_path, &destination_path)?;
+        let src = entry.path();
+        let dst = destination.join(entry.file_name());
+        if src.is_dir() {
+            fs::create_dir_all(&dst)
+                .with_context(|| format!("failed to create {}", dst.display()))?;
+            copy_static_assets(&src, &dst)?;
         } else {
-            fs::copy(&source_path, &destination_path).with_context(|| {
-                format!(
-                    "failed to copy {} to {}",
-                    source_path.display(),
-                    destination_path.display()
-                )
-            })?;
+            fs::copy(&src, &dst)
+                .with_context(|| format!("failed to copy {} to {}", src.display(), dst.display()))?;
         }
     }
     Ok(())
-}
-
-fn url_path_segment(segment: &str) -> String {
-    segment
-        .replace('%', "%25")
-        .replace(' ', "%20")
-        .replace('#', "%23")
-        .replace('?', "%3F")
 }
 
 fn available_port() -> Result<u16> {
