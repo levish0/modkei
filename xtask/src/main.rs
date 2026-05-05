@@ -4,11 +4,7 @@ use std::process::{Command, exit};
 use std::thread::sleep;
 use std::time::Duration;
 
-const CRATES: &[&str] = &[
-    "modkei-core",
-    "modkei-report",
-    "modkei",
-];
+const CRATES: &[&str] = &["modkei-core", "modkei-report", "modkei"];
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
