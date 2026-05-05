@@ -28,3 +28,6 @@ modkei-report-assets/
 modkei-report-files/
 # Generated graph data
 crates/modkei-report/ui/src/lib/generated/graph-data.json
+
+# Built UI
+crates/modkei-report/static-report/

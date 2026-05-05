@@ -6,6 +6,7 @@ repository.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
+include = ["src/**/*", "static-report/**/*", "Cargo.toml"]
 
 [dependencies]
 anyhow.workspace = true

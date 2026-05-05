@@ -8,8 +8,8 @@ const config = {
 	},
 	kit: {
 		adapter: adapter({
-			pages: '../static-report',
-			assets: '../static-report',
+			pages: '../crates/modkei-report/static-report',
+			assets: '../crates/modkei-report/static-report',
 			fallback: undefined,
 			precompress: false,
 			strict: true
