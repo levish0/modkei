@@ -16,9 +16,6 @@ const config = {
 		}),
 		paths: {
 			relative: true
-		},
-		output: {
-			bundleStrategy: 'inline'
 		}
 	}
 };

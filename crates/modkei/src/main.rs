@@ -103,8 +103,8 @@ fn main() -> Result<()> {
     println!("Report: {}", cli.output.display());
 
     if !cli.no_open {
-        modkei_report::open_in_browser(&cli.output)?;
-        println!("Opened report in browser.");
+        modkei_report::serve_and_open(&cli.output)?;
+        println!("Opened report at http://127.0.0.1:4173/.");
     }
 
     if scanned_files != scan.files.len() {

@@ -33,18 +33,6 @@ pub fn extract_imports(source: &str, language: Language) -> Vec<String> {
     imports
 }
 
-pub(super) fn collect_identifiers(node: Node<'_>, bytes: &[u8], identifiers: &mut Vec<String>) {
-    if node.kind() == "identifier" {
-        identifiers.push(text(node, bytes).to_string());
-        return;
-    }
-
-    let mut cursor = node.walk();
-    for child in node.children(&mut cursor) {
-        collect_identifiers(child, bytes, identifiers);
-    }
-}
-
 pub(super) fn collect_string_literals(
     node: Node<'_>,
     bytes: &[u8],
@@ -74,4 +62,90 @@ pub(super) fn unquote(value: &str) -> String {
         .trim_matches('\'')
         .trim_matches('`')
         .to_string()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn rust_extracts_use_trees_as_module_paths() {
+        let imports = extract_imports(
+            r#"
+            mod parser;
+            pub use parser::parse;
+            use crate::graph::{Edge, Node};
+            use super::module::Resolver as ModuleResolver;
+            "#,
+            Language::Rust,
+        );
+
+        assert_eq!(
+            imports,
+            vec![
+                "mod:parser",
+                "use:crate::graph::Edge",
+                "use:crate::graph::Node",
+                "use:parser::parse",
+                "use:super::module::Resolver"
+            ]
+        );
+    }
+
+    #[test]
+    fn typescript_extracts_import_sources() {
+        let imports = extract_imports(
+            r#"
+            import Graph from "graphology";
+            import { x } from "./local";
+            export * from "../shared";
+            "#,
+            Language::TypeScript,
+        );
+
+        assert_eq!(
+            imports,
+            vec!["module:../shared", "module:./local", "module:graphology"]
+        );
+    }
+
+    #[test]
+    fn python_extracts_import_sources() {
+        let imports = extract_imports(
+            r#"
+            import os
+            import package.module as module
+            from .utils import thing
+            "#,
+            Language::Python,
+        );
+
+        assert_eq!(
+            imports,
+            vec!["module:.utils", "module:os", "module:package.module"]
+        );
+    }
+
+    #[test]
+    fn go_extracts_import_sources() {
+        let imports = extract_imports(
+            r#"
+            import "fmt"
+            import (
+                "example.com/project/pkg"
+                alias "example.com/project/internal/tool"
+            )
+            "#,
+            Language::Go,
+        );
+
+        assert_eq!(
+            imports,
+            vec![
+                "module:example.com/project/internal/tool",
+                "module:example.com/project/pkg",
+                "module:fmt"
+            ]
+        );
+    }
 }
