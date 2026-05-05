@@ -68,6 +68,12 @@ fn publish(dry_run: bool) {
         let mut cmd = Command::new("cargo");
         cmd.arg("publish").arg("-p").arg(crate_name);
 
+        // modkei-report includes generated static-report files.
+        // They are intentionally not committed to git, but must be included in the crate package.
+        if *crate_name == "modkei-report" {
+            cmd.arg("--allow-dirty");
+        }
+
         if dry_run {
             cmd.arg("--dry-run");
         }
