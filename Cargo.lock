@@ -492,7 +492,7 @@ dependencies = [
 
 [[package]]
 name = "modkei"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "clap",
@@ -504,7 +504,7 @@ dependencies = [
 
 [[package]]
 name = "modkei-core"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "crossbeam-channel",
@@ -527,7 +527,7 @@ dependencies = [
 
 [[package]]
 name = "modkei-report"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "ctrlc",
@@ -1088,7 +1088,7 @@ dependencies = [
 
 [[package]]
 name = "xtask"
-version = "0.1.1"
+version = "0.1.2"
 
 [[package]]
 name = "zmij"
