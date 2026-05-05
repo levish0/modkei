@@ -18,7 +18,19 @@
 	import { Icon, ChevronRight, MagnifyingGlass } from 'svelte-hero-icons';
 	import generatedGraphData from '$lib/generated/graph-data.json';
 
-	type Language = 'Rust' | 'TypeScript' | 'JavaScript' | 'Python' | 'Go' | 'C' | 'C++' | 'Java' | 'Bash' | 'Makefile' | 'CMake' | 'Unknown';
+	type Language =
+		| 'Rust'
+		| 'TypeScript'
+		| 'JavaScript'
+		| 'Python'
+		| 'Go'
+		| 'C'
+		| 'C++'
+		| 'Java'
+		| 'Bash'
+		| 'Makefile'
+		| 'CMake'
+		| 'Unknown';
 	type GraphNode = { id: string; label: string; language: Language; lines: number; code: number };
 	type GraphEdge = { source: string; target: string; label: string };
 	type GraphData = { nodes: GraphNode[]; edges: GraphEdge[] };
@@ -107,7 +119,6 @@
 		if (controlsReady) applyForces();
 	});
 
-
 	// ── Lifecycle ──────────────────────────────────────────────────────────────
 
 	onMount(() => {
@@ -163,14 +174,19 @@
 		data.edges.forEach((edge, index) => {
 			if (!nextGraph.hasNode(edge.source) || !nextGraph.hasNode(edge.target)) return;
 			if (nextGraph.hasDirectedEdge(edge.source, edge.target)) return;
-			nextGraph.addDirectedEdgeWithKey(`${edge.source}->${edge.target}:${index}`, edge.source, edge.target, {
-				label: edge.label,
-				color: EDGE_DEFAULT,
-				baseColor: EDGE_DEFAULT,
-				size: linkThickness,
-				baseSize: linkThickness,
-				type: showArrows ? 'arrow' : 'line'
-			});
+			nextGraph.addDirectedEdgeWithKey(
+				`${edge.source}->${edge.target}:${index}`,
+				edge.source,
+				edge.target,
+				{
+					label: edge.label,
+					color: EDGE_DEFAULT,
+					baseColor: EDGE_DEFAULT,
+					size: linkThickness,
+					baseSize: linkThickness,
+					type: showArrows ? 'arrow' : 'line'
+				}
+			);
 		});
 
 		graph = nextGraph;
@@ -208,8 +224,8 @@
 
 		simulation = forceSimulation<SimNode>(simulationNodes)
 			.alpha(1)
-			.alphaDecay(0.018)   // slower decay â†’ longer initial animation
-			.velocityDecay(0.28)  // lower friction â†’ snappier drag response
+			.alphaDecay(0.018) // slower decay â†’ longer initial animation
+			.velocityDecay(0.28) // lower friction â†’ snappier drag response
 			.force('x', forceX<SimNode>(0).strength(centerForce))
 			.force('y', forceY<SimNode>(0).strength(centerForce))
 			.force('charge', forceManyBody<SimNode>().strength(-repelForce))
@@ -293,14 +309,20 @@
 			graph!.setNodeAttribute(
 				id,
 				'size',
-				isSelected ? (attrs.baseSize as number) * nodeSize * 1.6 : (attrs.baseSize as number) * nodeSize
+				isSelected
+					? (attrs.baseSize as number) * nodeSize * 1.6
+					: (attrs.baseSize as number) * nodeSize
 			);
 			graph!.setNodeAttribute(id, 'labelColor', dim ? '#505566' : '#c8cdd6');
 		});
 		graph.forEachEdge((edge, _attrs, source, target) => {
 			const connected = focused && (source === focused || target === focused);
 			const dim = focused && !connected;
-			graph!.setEdgeAttribute(edge, 'color', dim ? EDGE_DIM : connected ? EDGE_FOCUSED : EDGE_DEFAULT);
+			graph!.setEdgeAttribute(
+				edge,
+				'color',
+				dim ? EDGE_DIM : connected ? EDGE_FOCUSED : EDGE_DEFAULT
+			);
 			graph!.setEdgeAttribute(edge, 'size', connected ? linkThickness * 2 : linkThickness);
 		});
 		renderer.refresh();
@@ -435,23 +457,24 @@
 	<title>modkei graph</title>
 </svelte:head>
 
-<main style="position:relative; height:100vh; overflow:hidden; background:#1a1a1a; color:#c8cdd6; font-family:ui-sans-serif,system-ui,sans-serif;">
-
+<main
+	style="position:relative; height:100vh; overflow:hidden; background:#1a1a1a; color:#c8cdd6; font-family:ui-sans-serif,system-ui,sans-serif;"
+>
 	<!-- Graph canvas â€” stops before the panel so nodes aren't hidden behind it -->
 	<div bind:this={container} style="position:absolute; inset:0; right:268px;"></div>
 
 	<!-- ── Right panel ────────────────────────────────────────────────────── -->
 	<aside class="panel">
-
 		<!-- Header -->
 		<div class="panel-header">
 			<div class="panel-title">modkei</div>
-			<div class="panel-meta">{graphData.nodes.length} files · {graphData.edges.length} imports</div>
+			<div class="panel-meta">
+				{graphData.nodes.length} files · {graphData.edges.length} imports
+			</div>
 		</div>
 
 		<!-- Scrollable body -->
 		<div class="panel-body">
-
 			<!-- ── Filters ── -->
 			<button class="sec-btn" onclick={() => (filtersOpen = !filtersOpen)}>
 				<span class="chevron" class:open={filtersOpen}><Icon src={ChevronRight} size="14" /></span> Filters
@@ -488,9 +511,17 @@
 					<div class="ctrl-group">
 						<div class="ctrl-row">
 							<span class="ctrl-label">Text fade</span>
-							<input type="number" class="ctrl-num" min={0} max={24} step={1}
+							<input
+								type="number"
+								class="ctrl-num"
+								min={0}
+								max={24}
+								step={1}
 								bind:value={textFadeThreshold}
-								onchange={(e) => { const v = +(e.target as HTMLInputElement).value; textFadeThreshold = Math.max(0, Math.min(24, isNaN(v) ? textFadeThreshold : v)); }}
+								onchange={(e) => {
+									const v = +(e.target as HTMLInputElement).value;
+									textFadeThreshold = Math.max(0, Math.min(24, isNaN(v) ? textFadeThreshold : v));
+								}}
 							/>
 						</div>
 						<Slider type="single" bind:value={textFadeThreshold} min={0} max={24} step={1} />
@@ -499,9 +530,17 @@
 					<div class="ctrl-group">
 						<div class="ctrl-row">
 							<span class="ctrl-label">Node size</span>
-							<input type="number" class="ctrl-num" min={0.3} max={3} step={0.05}
+							<input
+								type="number"
+								class="ctrl-num"
+								min={0.3}
+								max={3}
+								step={0.05}
 								bind:value={nodeSize}
-								onchange={(e) => { const v = +(e.target as HTMLInputElement).value; nodeSize = Math.max(0.3, Math.min(3, isNaN(v) ? nodeSize : v)); }}
+								onchange={(e) => {
+									const v = +(e.target as HTMLInputElement).value;
+									nodeSize = Math.max(0.3, Math.min(3, isNaN(v) ? nodeSize : v));
+								}}
 							/>
 						</div>
 						<Slider type="single" bind:value={nodeSize} min={0.3} max={3} step={0.05} />
@@ -510,9 +549,17 @@
 					<div class="ctrl-group">
 						<div class="ctrl-row">
 							<span class="ctrl-label">Link thickness</span>
-							<input type="number" class="ctrl-num" min={0.2} max={5} step={0.1}
+							<input
+								type="number"
+								class="ctrl-num"
+								min={0.2}
+								max={5}
+								step={0.1}
 								bind:value={linkThickness}
-								onchange={(e) => { const v = +(e.target as HTMLInputElement).value; linkThickness = Math.max(0.2, Math.min(5, isNaN(v) ? linkThickness : v)); }}
+								onchange={(e) => {
+									const v = +(e.target as HTMLInputElement).value;
+									linkThickness = Math.max(0.2, Math.min(5, isNaN(v) ? linkThickness : v));
+								}}
 							/>
 						</div>
 						<Slider type="single" bind:value={linkThickness} min={0.2} max={5} step={0.1} />
@@ -529,9 +576,17 @@
 					<div class="ctrl-group">
 						<div class="ctrl-row">
 							<span class="ctrl-label">Center force</span>
-							<input type="number" class="ctrl-num" min={0} max={1} step={0.01}
+							<input
+								type="number"
+								class="ctrl-num"
+								min={0}
+								max={1}
+								step={0.01}
 								bind:value={centerForce}
-								onchange={(e) => { const v = +(e.target as HTMLInputElement).value; centerForce = Math.max(0, Math.min(1, isNaN(v) ? centerForce : v)); }}
+								onchange={(e) => {
+									const v = +(e.target as HTMLInputElement).value;
+									centerForce = Math.max(0, Math.min(1, isNaN(v) ? centerForce : v));
+								}}
 							/>
 						</div>
 						<Slider type="single" bind:value={centerForce} min={0} max={1} step={0.01} />
@@ -540,9 +595,17 @@
 					<div class="ctrl-group">
 						<div class="ctrl-row">
 							<span class="ctrl-label">Repel force</span>
-							<input type="number" class="ctrl-num" min={0} max={2000} step={10}
+							<input
+								type="number"
+								class="ctrl-num"
+								min={0}
+								max={2000}
+								step={10}
 								bind:value={repelForce}
-								onchange={(e) => { const v = +(e.target as HTMLInputElement).value; repelForce = Math.max(0, Math.min(2000, isNaN(v) ? repelForce : v)); }}
+								onchange={(e) => {
+									const v = +(e.target as HTMLInputElement).value;
+									repelForce = Math.max(0, Math.min(2000, isNaN(v) ? repelForce : v));
+								}}
 							/>
 						</div>
 						<Slider type="single" bind:value={repelForce} min={0} max={2000} step={10} />
@@ -551,9 +614,17 @@
 					<div class="ctrl-group">
 						<div class="ctrl-row">
 							<span class="ctrl-label">Link force</span>
-							<input type="number" class="ctrl-num" min={0} max={1} step={0.01}
+							<input
+								type="number"
+								class="ctrl-num"
+								min={0}
+								max={1}
+								step={0.01}
 								bind:value={linkForce}
-								onchange={(e) => { const v = +(e.target as HTMLInputElement).value; linkForce = Math.max(0, Math.min(1, isNaN(v) ? linkForce : v)); }}
+								onchange={(e) => {
+									const v = +(e.target as HTMLInputElement).value;
+									linkForce = Math.max(0, Math.min(1, isNaN(v) ? linkForce : v));
+								}}
 							/>
 						</div>
 						<Slider type="single" bind:value={linkForce} min={0} max={1} step={0.01} />
@@ -562,9 +633,17 @@
 					<div class="ctrl-group">
 						<div class="ctrl-row">
 							<span class="ctrl-label">Link distance</span>
-							<input type="number" class="ctrl-num" min={5} max={300} step={5}
+							<input
+								type="number"
+								class="ctrl-num"
+								min={5}
+								max={300}
+								step={5}
 								bind:value={linkDistance}
-								onchange={(e) => { const v = +(e.target as HTMLInputElement).value; linkDistance = Math.max(5, Math.min(300, isNaN(v) ? linkDistance : v)); }}
+								onchange={(e) => {
+									const v = +(e.target as HTMLInputElement).value;
+									linkDistance = Math.max(5, Math.min(300, isNaN(v) ? linkDistance : v));
+								}}
 							/>
 						</div>
 						<Slider type="single" bind:value={linkDistance} min={5} max={300} step={5} />
@@ -578,7 +657,9 @@
 					<div class="node-card-name">{selected.label}</div>
 					<div class="node-card-row">
 						<span class="node-card-key">Language</span>
-						<span class="node-card-val" style="color:{colors[selected.language] ?? colors.Unknown}">{selected.language}</span>
+						<span class="node-card-val" style="color:{colors[selected.language] ?? colors.Unknown}"
+							>{selected.language}</span
+						>
 					</div>
 					<div class="node-card-row">
 						<span class="node-card-key">Lines</span>
@@ -602,13 +683,12 @@
 					{/each}
 				</div>
 			{/if}
-
-		</div><!-- /panel-body -->
+		</div>
+		<!-- /panel-body -->
 
 		{#if error}
 			<div class="error-bar">{error}</div>
 		{/if}
-
 	</aside>
 </main>
 
@@ -616,7 +696,9 @@
 	/* ── Panel shell ─────────────────────────────────────── */
 	.panel {
 		position: absolute;
-		top: 0; right: 0; bottom: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
 		width: 264px;
 		background: #1e1e1e;
 		border-left: 1px solid #2e2e2e;
@@ -672,7 +754,9 @@
 		text-align: left;
 		transition: color 0.15s;
 	}
-	.sec-btn:hover { color: #a0a8b8; }
+	.sec-btn:hover {
+		color: #a0a8b8;
+	}
 
 	.chevron {
 		font-size: 13px;
@@ -681,7 +765,9 @@
 		transition: transform 0.18s ease;
 		color: #505566;
 	}
-	.chevron.open { transform: rotate(90deg); }
+	.chevron.open {
+		transform: rotate(90deg);
+	}
 
 	/* ── Section content ─────────────────────────────────── */
 	.sec-content {
@@ -755,12 +841,16 @@
 		text-align: right;
 		padding: 2px 6px;
 		height: 22px;
-		transition: border-color 0.15s, color 0.15s;
+		transition:
+			border-color 0.15s,
+			color 0.15s;
 		appearance: textfield;
 		-moz-appearance: textfield;
 	}
 	.ctrl-num::-webkit-inner-spin-button,
-	.ctrl-num::-webkit-outer-spin-button { -webkit-appearance: none; }
+	.ctrl-num::-webkit-outer-spin-button {
+		-webkit-appearance: none;
+	}
 	.ctrl-num:focus {
 		outline: none;
 		border-color: #4a4e5a;
@@ -791,8 +881,13 @@
 		justify-content: space-between;
 		font-size: 11px;
 	}
-	.node-card-key { color: #555; }
-	.node-card-val { color: #9aa3b4; font-variant-numeric: tabular-nums; }
+	.node-card-key {
+		color: #555;
+	}
+	.node-card-val {
+		color: #9aa3b4;
+		font-variant-numeric: tabular-nums;
+	}
 
 	/* ── Language legend ─────────────────────────────────── */
 	.legend {
