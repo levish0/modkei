@@ -3,7 +3,7 @@ members = ["crates/*", "xtask"]
 resolver = "3"
 
 [workspace.package]
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Levi Laine <shiueo.csh@gmail.com>"]
 repository = "https://github.com/levish0/modkei"
 description = "Explore your code as a graph."
@@ -16,8 +16,8 @@ readme = "README.md"
 
 [workspace.dependencies]
 # Internal crates
-modkei-core = { path = "crates/modkei-core", version = "0.1.2" }
-modkei-report = { path = "crates/modkei-report", version = "0.1.2" }
+modkei-core = { path = "crates/modkei-core", version = "0.1.3" }
+modkei-report = { path = "crates/modkei-report", version = "0.1.3" }
 
 # External dependencies
 anyhow = "1.0.102"
