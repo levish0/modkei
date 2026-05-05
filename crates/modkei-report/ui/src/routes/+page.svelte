@@ -88,6 +88,7 @@
 	let simulation: Simulation<SimNode, SimLink> | null = null;
 	let controlsReady = $state(false);
 	let simulationNodes: SimNode[] = [];
+	let simulationLinks: SimLink[] = [];
 	let simulationNodeById = new Map<string, SimNode>();
 	let focused: string | null = null;
 	let draggedNode: string | null = null;
@@ -218,7 +219,7 @@
 			y: graph!.getNodeAttribute(n.id, 'y') as number
 		}));
 		simulationNodeById = new Map(simulationNodes.map((n) => [n.id, n]));
-		const links = data.edges
+		simulationLinks = data.edges
 			.filter((e) => simulationNodeById.has(e.source) && simulationNodeById.has(e.target))
 			.map((e) => ({ source: e.source, target: e.target }));
 
@@ -231,7 +232,7 @@
 			.force('charge', forceManyBody<SimNode>().strength(-repelForce))
 			.force(
 				'link',
-				forceLink<SimNode, SimLink>(links)
+				forceLink<SimNode, SimLink>(simulationLinks)
 					.id((n: SimNode) => n.id)
 					.strength(linkForce)
 					.distance(linkDistance)
@@ -251,7 +252,10 @@
 		if (!simulation) return;
 		(simulation.force('x') as ReturnType<typeof forceX> | undefined)?.strength(centerForce);
 		(simulation.force('y') as ReturnType<typeof forceY> | undefined)?.strength(centerForce);
-		simulation.force('charge', forceManyBody<SimNode>().strength(-repelForce));
+		const chargeForce = simulation.force('charge') as ReturnType<typeof forceManyBody> | undefined;
+		if (chargeForce) {
+			chargeForce.strength(-repelForce);
+		}
 		(simulation.force('link') as ForceLink<SimNode, SimLink> | undefined)
 			?.strength(linkForce)
 			.distance(linkDistance);
@@ -280,14 +284,20 @@
 	function applyFilter() {
 		if (!graph) return;
 		const query = search.trim().toLowerCase();
+		
+		const visibleNodes = new Set<string>();
+
 		graph.forEachNode((node, attrs) => {
 			const matches =
 				!query ||
 				node.toLowerCase().includes(query) ||
 				String(attrs.label).toLowerCase().includes(query);
 			const orphan = graph!.degree(node) === 0;
-			graph!.setNodeAttribute(node, 'hidden', !matches || (!showOrphans && orphan));
+			const hidden = !matches || (!showOrphans && orphan);
+			graph!.setNodeAttribute(node, 'hidden', hidden);
+			if (!hidden) visibleNodes.add(node);
 		});
+		
 		graph.forEachEdge((edge, _attrs, source, target) => {
 			graph!.setEdgeAttribute(
 				edge,
@@ -295,6 +305,23 @@
 				graph!.getNodeAttribute(source, 'hidden') || graph!.getNodeAttribute(target, 'hidden')
 			);
 		});
+
+		// Remove hidden nodes from the physics simulation so they don't repel/pull
+		if (simulation) {
+			const activeNodes = simulationNodes.filter(n => visibleNodes.has(n.id));
+			const activeLinks = simulationLinks.filter(l => {
+				const sid = typeof l.source === 'object' ? l.source.id : l.source;
+				const tid = typeof l.target === 'object' ? l.target.id : l.target;
+				return visibleNodes.has(sid) && visibleNodes.has(tid);
+			});
+			
+			simulation.nodes(activeNodes);
+			const linkForceInstance = simulation.force('link') as ForceLink<SimNode, SimLink> | undefined;
+			if (linkForceInstance) {
+				linkForceInstance.links(activeLinks);
+			}
+			simulation.alpha(1).restart();
+		}
 	}
 
 	function updateSelection(node: string | null) {
@@ -580,16 +607,16 @@
 								type="number"
 								class="ctrl-num"
 								min={0}
-								max={1}
+								max={5}
 								step={0.01}
 								bind:value={centerForce}
 								onchange={(e) => {
 									const v = +(e.target as HTMLInputElement).value;
-									centerForce = Math.max(0, Math.min(1, isNaN(v) ? centerForce : v));
+									centerForce = Math.max(0, Math.min(5, isNaN(v) ? centerForce : v));
 								}}
 							/>
 						</div>
-						<Slider type="single" bind:value={centerForce} min={0} max={1} step={0.01} />
+						<Slider type="single" bind:value={centerForce} min={0} max={5} step={0.01} />
 					</div>
 
 					<div class="ctrl-group">
@@ -599,16 +626,16 @@
 								type="number"
 								class="ctrl-num"
 								min={0}
-								max={2000}
-								step={10}
+								max={10000}
+								step={0.1}
 								bind:value={repelForce}
 								onchange={(e) => {
 									const v = +(e.target as HTMLInputElement).value;
-									repelForce = Math.max(0, Math.min(2000, isNaN(v) ? repelForce : v));
+									repelForce = Math.max(0, Math.min(10000, isNaN(v) ? repelForce : v));
 								}}
 							/>
 						</div>
-						<Slider type="single" bind:value={repelForce} min={0} max={2000} step={10} />
+						<Slider type="single" bind:value={repelForce} min={0} max={10000} step={0.1} />
 					</div>
 
 					<div class="ctrl-group">
@@ -618,16 +645,16 @@
 								type="number"
 								class="ctrl-num"
 								min={0}
-								max={1}
+								max={5}
 								step={0.01}
 								bind:value={linkForce}
 								onchange={(e) => {
 									const v = +(e.target as HTMLInputElement).value;
-									linkForce = Math.max(0, Math.min(1, isNaN(v) ? linkForce : v));
+									linkForce = Math.max(0, Math.min(5, isNaN(v) ? linkForce : v));
 								}}
 							/>
 						</div>
-						<Slider type="single" bind:value={linkForce} min={0} max={1} step={0.01} />
+						<Slider type="single" bind:value={linkForce} min={0} max={5} step={0.01} />
 					</div>
 
 					<div class="ctrl-group">
@@ -637,16 +664,16 @@
 								type="number"
 								class="ctrl-num"
 								min={5}
-								max={300}
-								step={5}
+								max={1000}
+								step={0.1}
 								bind:value={linkDistance}
 								onchange={(e) => {
 									const v = +(e.target as HTMLInputElement).value;
-									linkDistance = Math.max(5, Math.min(300, isNaN(v) ? linkDistance : v));
+									linkDistance = Math.max(0, Math.min(1000, isNaN(v) ? linkDistance : v));
 								}}
 							/>
 						</div>
-						<Slider type="single" bind:value={linkDistance} min={5} max={300} step={5} />
+						<Slider type="single" bind:value={linkDistance} min={0} max={1000} step={0.1} />
 					</div>
 				</div>
 			{/if}
