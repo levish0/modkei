@@ -1,4 +1,4 @@
-name: Check
+name: ui check
 
 on:
   push:
