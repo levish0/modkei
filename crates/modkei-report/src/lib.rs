@@ -1,5 +1,6 @@
 use std::{
     fs,
+    net::TcpListener,
     path::{Path, PathBuf},
     process::{Command, Stdio},
     thread,
@@ -82,7 +83,7 @@ fn copy_report(output_path: &Path) -> Result<()> {
     Ok(())
 }
 
-pub fn serve_and_open(path: &Path) -> Result<()> {
+pub fn serve_and_open(path: &Path) -> Result<String> {
     let output_dir = path
         .parent()
         .filter(|path| !path.as_os_str().is_empty())
@@ -93,6 +94,7 @@ pub fn serve_and_open(path: &Path) -> Result<()> {
         .file_name()
         .and_then(|name| name.to_str())
         .unwrap_or("index.html");
+    let port = available_port()?;
 
     let pnpm = if cfg!(windows) { "pnpm.cmd" } else { "pnpm" };
     Command::new(pnpm)
@@ -103,7 +105,7 @@ pub fn serve_and_open(path: &Path) -> Result<()> {
             "--host",
             "127.0.0.1",
             "--port",
-            "4173",
+            &port.to_string(),
             "--strictPort",
             "--outDir",
         ])
@@ -123,12 +125,12 @@ pub fn serve_and_open(path: &Path) -> Result<()> {
 
     thread::sleep(Duration::from_millis(700));
     let url = if file_name == "index.html" {
-        "http://127.0.0.1:4173/".to_string()
+        format!("http://127.0.0.1:{port}/")
     } else {
-        format!("http://127.0.0.1:4173/{}", url_path_segment(file_name))
+        format!("http://127.0.0.1:{port}/{}", url_path_segment(file_name))
     };
     open::that(&url).with_context(|| format!("failed to open {url}"))?;
-    Ok(())
+    Ok(url)
 }
 
 fn copy_static_assets(source: &Path, destination: &Path) -> Result<()> {
@@ -161,4 +163,12 @@ fn url_path_segment(segment: &str) -> String {
         .replace(' ', "%20")
         .replace('#', "%23")
         .replace('?', "%3F")
+}
+
+fn available_port() -> Result<u16> {
+    let listener =
+        TcpListener::bind(("127.0.0.1", 0)).context("failed to reserve preview server port")?;
+    let port = listener.local_addr()?.port();
+    drop(listener);
+    Ok(port)
 }

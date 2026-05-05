@@ -39,10 +39,12 @@ Rust, TypeScript, JavaScript, Python, and Go.
 ## Output
 
 - Terminal: progress spinner followed by a language table with files, lines, code, comments, and blanks.
-- HTML: static Svelte/Sigma graph with embedded graph JSON, plus a `graph.json` sidecar for preview/dev use.
+- HTML: Svelte/Sigma graph built from generated graph data. By default `modkei` serves the output through Vite preview and opens it in the browser; use `--no-open` to only write the files.
 
 ## Architecture
 
 The workspace is split into `modkei-core` for scanning/parsing/graph data,
 `modkei-report` for static report generation, and `modkei` for CLI orchestration.
 The implementation is synchronous and uses Rayon plus channels, with no async runtime.
+The report pipeline writes `crates/modkei-report/ui/src/lib/generated/graph-data.json`,
+runs the SvelteKit build, then copies the built HTML and assets to the requested output directory.
