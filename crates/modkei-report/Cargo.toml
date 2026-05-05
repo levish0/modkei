@@ -3,9 +3,13 @@ name = "modkei-report"
 version.workspace = true
 authors.workspace = true
 repository.workspace = true
+description = "Interactive web report generation and embedded UI for modkei."
+readme.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
+keywords.workspace = true
+categories.workspace = true
 include = ["src/**/*", "static-report/**/*", "Cargo.toml"]
 
 [dependencies]

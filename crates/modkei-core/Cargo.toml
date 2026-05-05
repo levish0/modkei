@@ -3,9 +3,13 @@ name = "modkei-core"
 version.workspace = true
 authors.workspace = true
 repository.workspace = true
+description = "Core scanning and dependency graph generation for modkei."
+readme.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
+keywords.workspace = true
+categories.workspace = true
 
 [dependencies]
 anyhow.workspace = true
