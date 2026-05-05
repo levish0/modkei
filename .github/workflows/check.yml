@@ -21,6 +21,21 @@ jobs:
         with:
           workspaces: "."
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install UI dependencies
+        working-directory: modkei-ui
+        run: pnpm install --frozen-lockfile
+
+      - name: Build UI (generates static-report for rust-embed)
+        run: cargo xtask build-ui
+
       - name: Check
         run: cargo check --all-targets
 
