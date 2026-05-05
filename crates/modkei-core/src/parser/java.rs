@@ -1,6 +1,5 @@
 use tree_sitter::Node;
 
-
 pub fn extract(root: Node<'_>, bytes: &[u8]) -> Vec<String> {
     let mut imports = Vec::new();
     let mut stack = vec![root];
