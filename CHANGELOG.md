@@ -1,6 +1,28 @@
 # Changelog
 
-All notable changes to SevenMark parser will be documented in this file.
+All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.1.0] - 2026-05-06
+
+### Added
+- **Core CLI (`modkei`)**: Initial release of the `modkei` executable that explores code statistics and file dependencies.
+- **Dependency Graph Analysis (`modkei-core`)**: Fast, multi-threaded codebase scanning honoring `.gitignore` rules, powered by tree-sitter.
+- **Multi-Language Support**: Parsers and robust import/include resolution for:
+  - Rust, TypeScript, JavaScript, Python, Go, C, C++, Java, Bash, Makefile, and CMake.
+- **Interactive Visual Report (`modkei-ui`)**: A responsive node-graph visualization built with SvelteKit, Sigma.js, and D3-force. Features include:
+  - Dynamic physics controls (Repel Force, Link Distance, Center Force).
+  - Node filtering (Hide orphans, text fade threshold).
+  - Search functionality and focused node highlighting.
+- **Single-Binary Architecture**: The Svelte UI is statically built and baked directly into the Rust executable using `rust-embed`, served locally via `tiny-http`. No Node.js dependencies are required for users.
+- **Automated Workflows (`xtask`)**: Custom `cargo xtask` commands:
+  - `build-ui`: Compiles the Svelte frontend into static HTML for Rust embedding.
+  - `publish`: Automates sequential crate publishing to crates.io (`modkei-core` -> `modkei-report` -> `modkei`).
+- **CI/CD Integration**: GitHub Actions workflows for linting (Clippy), formatting (Rustfmt), and synchronized UI & Rust builds.
+
+### Changed
+- Transitioned from an external `npx serve` frontend dependency to a standalone memory-based `tiny-http` server.
+- Extracted frontend source from `crates/modkei-report/ui` to the workspace root (`modkei-ui`) for cleaner project encapsulation.
+- Optimized D3 physics simulations to exclude hidden/orphan nodes from calculations, drastically improving graph rendering performance on large codebases.
