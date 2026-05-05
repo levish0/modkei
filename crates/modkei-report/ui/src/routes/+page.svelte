@@ -15,6 +15,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Slider } from '$lib/components/ui/slider';
 	import { Switch } from '$lib/components/ui/switch';
+	import { Icon, ChevronRight, MagnifyingGlass } from 'svelte-hero-icons';
 	import generatedGraphData from '$lib/generated/graph-data.json';
 
 	type Language = 'Rust' | 'TypeScript' | 'JavaScript' | 'Python' | 'Go' | 'Unknown';
@@ -24,7 +25,7 @@
 	type SimNode = { id: string; x: number; y: number; fx?: number | null; fy?: number | null };
 	type SimLink = { source: string | SimNode; target: string | SimNode };
 
-	// Language colours – kept for legend; nodes use these tinted subtly.
+	// Language colours â€“ kept for legend; nodes use these tinted subtly.
 	const colors: Record<string, string> = {
 		Rust: '#e07b54',
 		TypeScript: '#4a90d9',
@@ -53,7 +54,7 @@
 	let nodeSize = $state(1.0);
 	let linkThickness = $state(0.8);
 
-	// Force params – spread-out Obsidian-like defaults
+	// Force params â€“ spread-out Obsidian-like defaults
 	let centerForce = $state(0.05);
 	let repelForce = $state(800);
 	let linkForce = $state(0.3);
@@ -185,7 +186,7 @@
 		controlsReady = true;
 	}
 
-	// ── Simulation ─────────────────────────────────────────────────────────────
+	// ── Simulation ─────────────────────────────────────────────────────────────â”€
 
 	function startSimulation(data: GraphData) {
 		if (!graph) return;
@@ -201,8 +202,8 @@
 
 		simulation = forceSimulation<SimNode>(simulationNodes)
 			.alpha(1)
-			.alphaDecay(0.018)   // slower decay → longer initial animation
-			.velocityDecay(0.28)  // lower friction → snappier drag response
+			.alphaDecay(0.018)   // slower decay â†’ longer initial animation
+			.velocityDecay(0.28)  // lower friction â†’ snappier drag response
 			.force('x', forceX<SimNode>(0).strength(centerForce))
 			.force('y', forceY<SimNode>(0).strength(centerForce))
 			.force('charge', forceManyBody<SimNode>().strength(-repelForce))
@@ -236,7 +237,7 @@
 		simulation.alpha(Math.max(simulation.alpha(), 1.0)).restart();
 	}
 
-	// ── Display ────────────────────────────────────────────────────────────────
+	// ── Display ────────────────────────────────────────────────────────────────â”€
 
 	function applyDisplay() {
 		if (!graph || !renderer) return;
@@ -299,7 +300,7 @@
 		renderer.refresh();
 	}
 
-	// ── Interaction ────────────────────────────────────────────────────────────
+	// ── Interaction ────────────────────────────────────────────────────────────â”€
 
 	function wireRenderer() {
 		if (!renderer || !graph) return;
@@ -318,7 +319,7 @@
 				simNode.fx = simNode.x;
 				simNode.fy = simNode.y;
 			}
-			// Immediately heat to max — neighbours react in real-time
+			// Immediately heat to max â€” neighbours react in real-time
 			simulation?.alpha(1.0).alphaTarget(0.5).restart();
 			graph.setNodeAttribute(draggedNode, 'highlighted', true);
 			renderer?.setSetting('enableCameraPanning', false);
@@ -360,7 +361,7 @@
 		renderer.getMouseCaptor().on('mouseleave', release);
 	}
 
-	// ── Canvas renderers ───────────────────────────────────────────────────────
+	// ── Canvas renderers ───────────────────────────────────────────────────────â”€â”€
 
 	function drawLabel(
 		context: CanvasRenderingContext2D,
@@ -428,224 +429,397 @@
 	<title>modkei graph</title>
 </svelte:head>
 
-<!-- Graph canvas fills entire viewport -->
-<main class="relative h-screen overflow-hidden" style="background:#1a1a1a; color:#c8cdd6;">
-	<div bind:this={container} class="absolute inset-0"></div>
+<main style="position:relative; height:100vh; overflow:hidden; background:#1a1a1a; color:#c8cdd6; font-family:ui-sans-serif,system-ui,sans-serif;">
 
-	<!-- Right-side panel (Obsidian style) -->
-	<aside
-		style="
-			position:absolute; top:0; right:0; bottom:0;
-			width:260px;
-			background:#242424;
-			border-left:1px solid #333;
-			display:flex; flex-direction:column;
-			font-family: ui-sans-serif, system-ui, sans-serif;
-			font-size:13px;
-		"
-	>
+	<!-- Graph canvas â€” stops before the panel so nodes aren't hidden behind it -->
+	<div bind:this={container} style="position:absolute; inset:0; right:268px;"></div>
+
+	<!-- ── Right panel ────────────────────────────────────────────────────── -->
+	<aside class="panel">
+
 		<!-- Header -->
-		<div style="padding:14px 16px 10px; border-bottom:1px solid #333; flex-shrink:0;">
-			<div style="font-size:15px; font-weight:600; color:#e2e4e9;">modkei graph</div>
-			<div style="margin-top:3px; color:#666; font-size:12px;">
-				{graphData.nodes.length} files · {graphData.edges.length} imports
-			</div>
+		<div class="panel-header">
+			<div class="panel-title">modkei</div>
+			<div class="panel-meta">{graphData.nodes.length} files · {graphData.edges.length} imports</div>
 		</div>
 
-		<!-- Scrollable controls -->
-		<div style="flex:1; overflow-y:auto; padding:0 0 12px;">
+		<!-- Scrollable body -->
+		<div class="panel-body">
 
-			<!-- ── Filters section ── -->
-			<button
-				class="obs-section-header"
-				onclick={() => (filtersOpen = !filtersOpen)}
-			>
-				<span class="obs-chevron" class:open={filtersOpen}>›</span>
-				Filters
+			<!-- ── Filters ── -->
+			<button class="sec-btn" onclick={() => (filtersOpen = !filtersOpen)}>
+				<span class="chevron" class:open={filtersOpen}><Icon src={ChevronRight} size="14" /></span> Filters
 			</button>
 			{#if filtersOpen}
-				<div style="padding:8px 16px 4px;">
-					<Input
-						style="background:#1a1a1a; border:1px solid #333; color:#c8cdd6; font-size:12px; height:30px; border-radius:6px;"
-						placeholder="Search files…"
-						bind:value={search}
-						oninput={() => applyFilter()}
-					/>
-					<div class="obs-toggle-row" style="margin-top:10px;">
-						<span>Orphans</span>
+				<div class="sec-content">
+					<div class="search-wrap">
+						<span class="search-icon"><Icon src={MagnifyingGlass} size="16" /></span>
+						<Input
+							class="search-input"
+							placeholder="Search files…"
+							bind:value={search}
+							oninput={() => applyFilter()}
+						/>
+					</div>
+					<div class="toggle-row">
+						<span>Show orphans</span>
 						<Switch bind:checked={showOrphans} />
 					</div>
 				</div>
 			{/if}
 
-			<!-- ── Display section ── -->
-			<button
-				class="obs-section-header"
-				onclick={() => (displayOpen = !displayOpen)}
-			>
-				<span class="obs-chevron" class:open={displayOpen}>›</span>
-				Display
+			<!-- ── Display ── -->
+			<button class="sec-btn" onclick={() => (displayOpen = !displayOpen)}>
+				<span class="chevron" class:open={displayOpen}><Icon src={ChevronRight} size="14" /></span> Display
 			</button>
 			{#if displayOpen}
-				<div style="padding:8px 16px 4px; display:flex; flex-direction:column; gap:12px;">
-					<div class="obs-toggle-row">
+				<div class="sec-content">
+					<div class="toggle-row">
 						<span>Arrows</span>
 						<Switch bind:checked={showArrows} />
 					</div>
-					<div class="obs-slider-row">
-						<div class="obs-slider-label">
-							<span>Text fade threshold</span>
-							<span class="obs-val">{textFadeThreshold}</span>
+
+					<div class="ctrl-group">
+						<div class="ctrl-row">
+							<span class="ctrl-label">Text fade</span>
+							<input type="number" class="ctrl-num" min={0} max={24} step={1}
+								bind:value={textFadeThreshold}
+								onchange={(e) => { const v = +(e.target as HTMLInputElement).value; textFadeThreshold = Math.max(0, Math.min(24, isNaN(v) ? textFadeThreshold : v)); }}
+							/>
 						</div>
 						<Slider type="single" bind:value={textFadeThreshold} min={0} max={24} step={1} />
 					</div>
-					<div class="obs-slider-row">
-						<div class="obs-slider-label">
-							<span>Node size</span>
-							<span class="obs-val">{nodeSize.toFixed(2)}</span>
+
+					<div class="ctrl-group">
+						<div class="ctrl-row">
+							<span class="ctrl-label">Node size</span>
+							<input type="number" class="ctrl-num" min={0.3} max={3} step={0.05}
+								bind:value={nodeSize}
+								onchange={(e) => { const v = +(e.target as HTMLInputElement).value; nodeSize = Math.max(0.3, Math.min(3, isNaN(v) ? nodeSize : v)); }}
+							/>
 						</div>
 						<Slider type="single" bind:value={nodeSize} min={0.3} max={3} step={0.05} />
 					</div>
-					<div class="obs-slider-row">
-						<div class="obs-slider-label">
-							<span>Link thickness</span>
-							<span class="obs-val">{linkThickness.toFixed(1)}</span>
+
+					<div class="ctrl-group">
+						<div class="ctrl-row">
+							<span class="ctrl-label">Link thickness</span>
+							<input type="number" class="ctrl-num" min={0.2} max={5} step={0.1}
+								bind:value={linkThickness}
+								onchange={(e) => { const v = +(e.target as HTMLInputElement).value; linkThickness = Math.max(0.2, Math.min(5, isNaN(v) ? linkThickness : v)); }}
+							/>
 						</div>
 						<Slider type="single" bind:value={linkThickness} min={0.2} max={5} step={0.1} />
 					</div>
-
 				</div>
 			{/if}
 
-			<!-- ── Forces section ── -->
-			<button
-				class="obs-section-header"
-				onclick={() => (forcesOpen = !forcesOpen)}
-			>
-				<span class="obs-chevron" class:open={forcesOpen}>›</span>
-				Forces
+			<!-- ── Forces ── -->
+			<button class="sec-btn" onclick={() => (forcesOpen = !forcesOpen)}>
+				<span class="chevron" class:open={forcesOpen}><Icon src={ChevronRight} size="14" /></span> Forces
 			</button>
 			{#if forcesOpen}
-				<div style="padding:8px 16px 4px; display:flex; flex-direction:column; gap:12px;">
-					<div class="obs-slider-row">
-						<div class="obs-slider-label">
-							<span>Center force</span>
-							<span class="obs-val">{centerForce.toFixed(2)}</span>
+				<div class="sec-content">
+					<div class="ctrl-group">
+						<div class="ctrl-row">
+							<span class="ctrl-label">Center force</span>
+							<input type="number" class="ctrl-num" min={0} max={1} step={0.01}
+								bind:value={centerForce}
+								onchange={(e) => { const v = +(e.target as HTMLInputElement).value; centerForce = Math.max(0, Math.min(1, isNaN(v) ? centerForce : v)); }}
+							/>
 						</div>
 						<Slider type="single" bind:value={centerForce} min={0} max={1} step={0.01} />
 					</div>
-					<div class="obs-slider-row">
-						<div class="obs-slider-label">
-							<span>Repel force</span>
-							<span class="obs-val">{repelForce.toFixed(0)}</span>
+
+					<div class="ctrl-group">
+						<div class="ctrl-row">
+							<span class="ctrl-label">Repel force</span>
+							<input type="number" class="ctrl-num" min={0} max={2000} step={10}
+								bind:value={repelForce}
+								onchange={(e) => { const v = +(e.target as HTMLInputElement).value; repelForce = Math.max(0, Math.min(2000, isNaN(v) ? repelForce : v)); }}
+							/>
 						</div>
 						<Slider type="single" bind:value={repelForce} min={0} max={2000} step={10} />
 					</div>
-					<div class="obs-slider-row">
-						<div class="obs-slider-label">
-							<span>Link force</span>
-							<span class="obs-val">{linkForce.toFixed(2)}</span>
+
+					<div class="ctrl-group">
+						<div class="ctrl-row">
+							<span class="ctrl-label">Link force</span>
+							<input type="number" class="ctrl-num" min={0} max={1} step={0.01}
+								bind:value={linkForce}
+								onchange={(e) => { const v = +(e.target as HTMLInputElement).value; linkForce = Math.max(0, Math.min(1, isNaN(v) ? linkForce : v)); }}
+							/>
 						</div>
 						<Slider type="single" bind:value={linkForce} min={0} max={1} step={0.01} />
 					</div>
-					<div class="obs-slider-row">
-						<div class="obs-slider-label">
-							<span>Link distance</span>
-							<span class="obs-val">{linkDistance.toFixed(0)}</span>
+
+					<div class="ctrl-group">
+						<div class="ctrl-row">
+							<span class="ctrl-label">Link distance</span>
+							<input type="number" class="ctrl-num" min={5} max={300} step={5}
+								bind:value={linkDistance}
+								onchange={(e) => { const v = +(e.target as HTMLInputElement).value; linkDistance = Math.max(5, Math.min(300, isNaN(v) ? linkDistance : v)); }}
+							/>
 						</div>
 						<Slider type="single" bind:value={linkDistance} min={5} max={300} step={5} />
 					</div>
 				</div>
 			{/if}
 
-			<!-- ── Info / Selection ── -->
+			<!-- ── Selected node info ── -->
 			{#if selected}
-				<div style="margin:12px 16px 0; padding:10px 12px; background:#1e1e1e; border:1px solid #333; border-radius:8px; font-size:12px; color:#a0a8b8; line-height:1.7;">
-					<div style="font-weight:600; color:#c8cdd6; margin-bottom:4px; word-break:break-all;">
-						{selected.label}
+				<div class="node-card">
+					<div class="node-card-name">{selected.label}</div>
+					<div class="node-card-row">
+						<span class="node-card-key">Language</span>
+						<span class="node-card-val" style="color:{colors[selected.language] ?? colors.Unknown}">{selected.language}</span>
 					</div>
-					<div>Language: <span style="color:#c8cdd6;">{selected.language}</span></div>
-					<div>Lines: <span style="color:#c8cdd6;">{selected.lines}</span></div>
-					<div>Code lines: <span style="color:#c8cdd6;">{selected.code}</span></div>
+					<div class="node-card-row">
+						<span class="node-card-key">Lines</span>
+						<span class="node-card-val">{selected.lines.toLocaleString()}</span>
+					</div>
+					<div class="node-card-row">
+						<span class="node-card-key">Code lines</span>
+						<span class="node-card-val">{selected.code.toLocaleString()}</span>
+					</div>
 				</div>
 			{/if}
 
 			<!-- Language legend -->
 			{#if languageEntries.length > 0}
-				<div style="margin:12px 16px 0; display:flex; flex-wrap:wrap; gap:6px;">
+				<div class="legend">
 					{#each languageEntries as entry}
-						<span style="
-							display:inline-flex; align-items:center; gap:5px;
-							padding:2px 8px; border-radius:99px;
-							background:#1e1e1e; border:1px solid #333;
-							font-size:11px; color:#a0a8b8;
-						">
-							<span style="width:7px;height:7px;border-radius:50%;background:{entry.color};flex-shrink:0;"></span>
+						<span class="legend-chip">
+							<span class="legend-dot" style="background:{entry.color}"></span>
 							{entry.language}
 						</span>
 					{/each}
 				</div>
 			{/if}
-		</div>
+
+		</div><!-- /panel-body -->
 
 		{#if error}
-			<div style="padding:10px 16px; background:#3a1a1a; color:#ff8888; font-size:12px; border-top:1px solid #552222; flex-shrink:0;">
-				{error}
-			</div>
+			<div class="error-bar">{error}</div>
 		{/if}
+
 	</aside>
 </main>
 
 <style>
-	.obs-section-header {
+	/* ── Panel shell ─────────────────────────────────────── */
+	.panel {
+		position: absolute;
+		top: 0; right: 0; bottom: 0;
+		width: 264px;
+		background: #1e1e1e;
+		border-left: 1px solid #2e2e2e;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+	}
+
+	/* ── Header ──────────────────────────────────────────── */
+	.panel-header {
+		padding: 16px 16px 12px;
+		border-bottom: 1px solid #2e2e2e;
+		flex-shrink: 0;
+		background: linear-gradient(160deg, #252530 0%, #1e1e1e 100%);
+	}
+	.panel-title {
+		font-size: 16px;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		color: #e8eaf0;
+	}
+	.panel-meta {
+		margin-top: 3px;
+		font-size: 11px;
+		color: #555;
+	}
+
+	/* ── Scrollable body ─────────────────────────────────── */
+	.panel-body {
+		flex: 1;
+		overflow-y: auto;
+		overflow-x: hidden;
+		scrollbar-width: thin;
+		scrollbar-color: #333 transparent;
+	}
+
+	/* ── Section buttons ─────────────────────────────────── */
+	.sec-btn {
 		display: flex;
 		align-items: center;
 		gap: 6px;
 		width: 100%;
-		padding: 8px 16px;
+		padding: 9px 14px 8px;
 		background: none;
 		border: none;
-		border-top: 1px solid #2e2e2e;
-		color: #888;
-		font-size: 11px;
-		font-weight: 600;
-		letter-spacing: 0.07em;
+		border-top: 1px solid #272727;
+		color: #606878;
+		font-size: 10px;
+		font-weight: 700;
+		letter-spacing: 0.09em;
 		text-transform: uppercase;
 		cursor: pointer;
 		text-align: left;
+		transition: color 0.15s;
 	}
-	.obs-section-header:hover {
-		color: #c8cdd6;
-	}
-	.obs-chevron {
-		font-size: 14px;
-		transition: transform 0.18s ease;
+	.sec-btn:hover { color: #a0a8b8; }
+
+	.chevron {
+		font-size: 13px;
 		display: inline-block;
 		transform: rotate(0deg);
+		transition: transform 0.18s ease;
+		color: #505566;
 	}
-	.obs-chevron.open {
-		transform: rotate(90deg);
+	.chevron.open { transform: rotate(90deg); }
+
+	/* ── Section content ─────────────────────────────────── */
+	.sec-content {
+		padding: 8px 14px 12px;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
 	}
-	.obs-toggle-row {
+
+	/* ── Search ──────────────────────────────────────────── */
+	.search-wrap {
+		position: relative;
+	}
+	.search-icon {
+		position: absolute;
+		left: 8px;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 13px;
+		height: 13px;
+		color: #444;
+		pointer-events: none;
+	}
+	:global(.search-input) {
+		width: 100% !important;
+		padding-left: 28px !important;
+		background: #141414 !important;
+		border: 1px solid #2e2e2e !important;
+		border-radius: 6px !important;
+		color: #c8cdd6 !important;
+		font-size: 12px !important;
+		height: 30px !important;
+	}
+	:global(.search-input:focus) {
+		border-color: #444 !important;
+		outline: none !important;
+	}
+
+	/* ── Toggle row ──────────────────────────────────────── */
+	.toggle-row {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		color: #a0a8b8;
+		font-size: 12px;
+		color: #8a92a0;
 	}
-	.obs-slider-row {
+
+	/* ── Slider + number input ───────────────────────────── */
+	.ctrl-group {
 		display: flex;
 		flex-direction: column;
 		gap: 5px;
 	}
-	.obs-slider-label {
+	.ctrl-row {
 		display: flex;
+		align-items: center;
 		justify-content: space-between;
-		color: #a0a8b8;
 	}
-	.obs-val {
-		font-variant-numeric: tabular-nums;
-		color: #666;
+	.ctrl-label {
+		font-size: 12px;
+		color: #8a92a0;
+	}
+	.ctrl-num {
+		width: 54px;
+		background: #141414;
+		border: 1px solid #2e2e2e;
+		border-radius: 5px;
+		color: #9aa3b4;
 		font-size: 11px;
+		font-family: 'SF Mono', ui-monospace, monospace;
+		text-align: right;
+		padding: 2px 6px;
+		height: 22px;
+		transition: border-color 0.15s, color 0.15s;
+		appearance: textfield;
+		-moz-appearance: textfield;
+	}
+	.ctrl-num::-webkit-inner-spin-button,
+	.ctrl-num::-webkit-outer-spin-button { -webkit-appearance: none; }
+	.ctrl-num:focus {
+		outline: none;
+		border-color: #4a4e5a;
+		color: #c8cdd6;
 	}
 
+	/* ── Node info card ──────────────────────────────────── */
+	.node-card {
+		margin: 4px 14px 0;
+		padding: 10px 12px;
+		background: #171717;
+		border: 1px solid #2a2a2a;
+		border-radius: 8px;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+	.node-card-name {
+		font-size: 12px;
+		font-weight: 600;
+		color: #c8cdd6;
+		word-break: break-all;
+		margin-bottom: 4px;
+		line-height: 1.4;
+	}
+	.node-card-row {
+		display: flex;
+		justify-content: space-between;
+		font-size: 11px;
+	}
+	.node-card-key { color: #555; }
+	.node-card-val { color: #9aa3b4; font-variant-numeric: tabular-nums; }
+
+	/* ── Language legend ─────────────────────────────────── */
+	.legend {
+		margin: 10px 14px 8px;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 5px;
+	}
+	.legend-chip {
+		display: inline-flex;
+		align-items: center;
+		gap: 5px;
+		padding: 2px 8px;
+		border-radius: 99px;
+		background: #161616;
+		border: 1px solid #2a2a2a;
+		font-size: 11px;
+		color: #6a7280;
+	}
+	.legend-dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		flex-shrink: 0;
+	}
+
+	/* ── Error bar ───────────────────────────────────────── */
+	.error-bar {
+		padding: 10px 14px;
+		background: #2a1414;
+		color: #ff8888;
+		font-size: 11px;
+		border-top: 1px solid #441818;
+		flex-shrink: 0;
+	}
 </style>
