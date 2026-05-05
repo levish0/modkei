@@ -26,3 +26,5 @@ rustc-ice-*.txt
 reference
 modkei-report-assets/
 modkei-report-files/
+# Generated graph data
+crates/modkei-report/ui/src/lib/generated/graph-data.json
