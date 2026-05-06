@@ -1,8 +1,8 @@
 # modkei
 
-**modkei** is a Rust CLI tool for analyzing source code and visualizing file dependencies as an interactive graph.
+**modkei** is a Rust CLI tool for analyzing Rust codebases and visualizing file dependencies as an interactive graph.
 
-It scans your source directory, prints a language breakdown in the terminal, and opens an interactive dependency graph in the browser.
+It scans your Rust source tree, prints code statistics in the terminal, and opens an interactive dependency graph in the browser.
 
 [![Crates.io](https://img.shields.io/crates/v/modkei.svg)](https://crates.io/crates/modkei)
 [![Documentation](https://docs.rs/modkei/badge.svg)](https://docs.rs/modkei)
@@ -30,7 +30,7 @@ modkei .
 
 `modkei` will:
 1. Scan the directory (respecting your `.gitignore`).
-2. Print the file statistics to the terminal.
+2. Print Rust file statistics to the terminal.
 3. Spin up an embedded local server and automatically open the interactive dependency graph in your web browser.
 
 ### Options
@@ -51,24 +51,14 @@ Options:
   -V, --version         Print version
 ```
 
-## Supported Languages
+## Rust Analysis
 
-`modkei` uses `tree-sitter` for robust parsing and include/import resolution. Currently supported languages:
-
-- Rust
-- TypeScript / JavaScript
-- Python
-- Go
-- C / C++
-- Java
-- Bash
-- Makefile
-- CMake
+`modkei` is currently focused on Rust codebases. It uses `rust-analyzer` for workspace-aware dependency resolution and falls back to Rust syntax parsing for manifest-less module trees.
 
 ## Architecture & Development
 
 The workspace is split into three core crates:
-- `modkei-core`: Multi-threaded scanning, parsing, and graph data generation using `rayon` and `tree-sitter`.
+- `modkei-core`: Multi-threaded Rust scanning and graph data generation using `rayon` and `rust-analyzer`.
 - `modkei-report`: In-memory `tiny-http` server that serves the static Svelte frontend baked into the binary via `rust-embed`.
 - `modkei`: The CLI orchestration tool.
 

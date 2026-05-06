@@ -1,11 +1,11 @@
+mod backend;
 mod graph;
 mod lang;
-mod parser;
-mod resolver;
+mod model;
 mod stats;
 mod walker;
 
 pub use graph::{Edge, GraphData, Node, build_graph};
 pub use lang::Language;
-pub use parser::{RawImport, RawImportKind};
-pub use walker::{FileResult, IgnoreOptions, ImportEdge, ScanOptions, ScanOutput, scan};
+pub use model::ResolvedEdge;
+pub use walker::{FileResult, IgnoreOptions, ScanOptions, ScanOutput, scan};

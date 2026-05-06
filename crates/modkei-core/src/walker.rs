@@ -1,7 +1,4 @@
-use std::{
-    path::{Path, PathBuf},
-    sync::Mutex,
-};
+use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result};
 use crossbeam_channel::Sender;
@@ -9,11 +6,7 @@ use ignore::WalkBuilder;
 use rayon::prelude::*;
 use serde::Serialize;
 
-use crate::{
-    Language, RawImportKind, build_graph,
-    parser::{self},
-    stats,
-};
+use crate::{Language, backend, build_graph, stats};
 
 #[derive(Debug, Clone, Copy, Default)]
 pub struct IgnoreOptions {
@@ -39,50 +32,35 @@ pub struct FileResult {
     pub blanks: u64,
 }
 
-#[derive(Debug, Clone, Serialize)]
-pub struct ImportEdge {
-    pub from: PathBuf,
-    pub target: String,
-    pub kind: RawImportKind,
-    pub symbols: Vec<String>,
-    pub byte_start: usize,
-    pub byte_end: usize,
-    pub language: Language,
-}
-
 #[derive(Debug, Clone)]
 pub struct ScanOutput {
     pub files: Vec<FileResult>,
-    pub imports: Vec<ImportEdge>,
     pub graph: crate::GraphData,
 }
 
 pub fn scan(root: &Path, options: ScanOptions, tx: Sender<FileResult>) -> Result<ScanOutput> {
     let files = collect_files(root, options)?;
-    let imports = Mutex::new(Vec::new());
-    let results = Mutex::new(Vec::new());
+    let results = std::sync::Mutex::new(Vec::new());
 
     files.par_iter().for_each(|path| {
-        if let Ok((file, edges)) = analyze_file(root, path) {
+        if let Ok(file) = analyze_file(root, path) {
             let _ = tx.send(file.clone());
             results.lock().expect("results mutex poisoned").push(file);
-            imports
-                .lock()
-                .expect("imports mutex poisoned")
-                .extend(edges);
         }
     });
     drop(tx);
 
     let files = results.into_inner().expect("results mutex poisoned");
-    let imports = imports.into_inner().expect("imports mutex poisoned");
-    let graph = build_graph(root, &files, &imports);
+    let semantic_edges = backend::semantic_edges(
+        root,
+        &files
+            .iter()
+            .map(|file| file.path.clone())
+            .collect::<Vec<_>>(),
+    )?;
+    let graph = build_graph(root, &files, &semantic_edges);
 
-    Ok(ScanOutput {
-        files,
-        imports,
-        graph,
-    })
+    Ok(ScanOutput { files, graph })
 }
 
 fn collect_files(root: &Path, options: ScanOptions) -> Result<Vec<PathBuf>> {
@@ -118,36 +96,21 @@ fn collect_files(root: &Path, options: ScanOptions) -> Result<Vec<PathBuf>> {
     Ok(files)
 }
 
-fn analyze_file(root: &Path, path: &Path) -> Result<(FileResult, Vec<ImportEdge>)> {
+fn analyze_file(root: &Path, path: &Path) -> Result<FileResult> {
     let language = Language::from_path(path);
     let source = std::fs::read_to_string(path)
         .with_context(|| format!("failed to read {}", path.display()))?;
     let (lines, code, comments, blanks) = stats::count_lines(&source, language);
     let rel_path = normalize_path(path.strip_prefix(root).unwrap_or(path));
-    let imports = parser::extract_imports(&source, language)
-        .into_iter()
-        .map(|raw| ImportEdge {
-            from: path.to_path_buf(),
-            target: raw.target,
-            kind: raw.kind,
-            symbols: raw.symbols,
-            byte_start: raw.byte_start,
-            byte_end: raw.byte_end,
-            language,
-        })
-        .collect();
-    Ok((
-        FileResult {
-            path: path.to_path_buf(),
-            rel_path,
-            language,
-            lines,
-            code,
-            comments,
-            blanks,
-        },
-        imports,
-    ))
+    Ok(FileResult {
+        path: path.to_path_buf(),
+        rel_path,
+        language,
+        lines,
+        code,
+        comments,
+        blanks,
+    })
 }
 
 pub(crate) fn normalize_path(path: &Path) -> String {
