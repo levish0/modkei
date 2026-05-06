@@ -1,16 +1,20 @@
 use std::{collections::HashSet, path::Path};
 
-use super::resolve_candidate;
+use super::common::resolve_candidate;
+use crate::{ImportEdge, RawImportKind};
 
-pub fn resolve(root: &Path, from: &Path, raw: &str, rel_set: &HashSet<String>) -> Option<String> {
-    let parent = from.parent()?;
-    if let Some(module) = raw.strip_prefix("mod:") {
-        return resolve_candidate(root, &parent.join(module.trim()), rel_set, &["rs"]);
+pub fn resolve(root: &Path, import: &ImportEdge, rel_set: &HashSet<String>) -> Option<String> {
+    let parent = import.from.parent()?;
+    if import.kind == RawImportKind::Module {
+        return resolve_candidate(root, &parent.join(import.target.trim()), rel_set, &["rs"]);
     }
 
-    let module = raw.strip_prefix("use:")?;
-    let src_root = nearest_src_dir(from).unwrap_or(root);
-    let candidates = rust_path_candidates(src_root, parent, module);
+    if import.kind != RawImportKind::Symbol {
+        return None;
+    }
+
+    let src_root = nearest_src_dir(&import.from).unwrap_or(root);
+    let candidates = rust_path_candidates(src_root, parent, &import.target);
     candidates
         .iter()
         .find_map(|candidate| resolve_candidate(root, candidate, rel_set, &["rs"]))

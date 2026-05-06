@@ -1,16 +1,15 @@
 use tree_sitter::Node;
 
-use super::text;
+use super::{RawImport, RawImportKind, text};
 
-pub fn extract(root: Node<'_>, bytes: &[u8]) -> Vec<String> {
+pub fn extract(root: Node<'_>, bytes: &[u8]) -> Vec<RawImport> {
     let mut imports = Vec::new();
     collect(root, bytes, &mut imports);
     imports
 }
 
-fn collect(root: Node<'_>, bytes: &[u8], imports: &mut Vec<String>) {
+fn collect(root: Node<'_>, bytes: &[u8], imports: &mut Vec<RawImport>) {
     let mut stack = vec![root];
-    let mut cursor = root.walk();
 
     while let Some(node) = stack.pop() {
         match node.kind() {
@@ -21,23 +20,28 @@ fn collect(root: Node<'_>, bytes: &[u8], imports: &mut Vec<String>) {
             _ => {}
         }
 
+        let mut cursor = node.walk();
         for child in node.children(&mut cursor) {
             stack.push(child);
         }
     }
 }
 
-fn collect_mod_target(node: Node<'_>, bytes: &[u8], imports: &mut Vec<String>) {
+fn collect_mod_target(node: Node<'_>, bytes: &[u8], imports: &mut Vec<RawImport>) {
     let mut cursor = node.walk();
     for child in node.children(&mut cursor) {
         if child.kind() == "identifier" {
-            imports.push(format!("mod:{}", text(child, bytes)));
+            imports.push(RawImport::new(
+                text(child, bytes),
+                RawImportKind::Module,
+                child,
+            ));
             return;
         }
     }
 }
 
-fn collect_use_targets(node: Node<'_>, bytes: &[u8], imports: &mut Vec<String>) {
+fn collect_use_targets(node: Node<'_>, bytes: &[u8], imports: &mut Vec<RawImport>) {
     let declaration = text(node, bytes);
     let Some(use_tree) = declaration
         .split_once(" use ")
@@ -47,13 +51,13 @@ fn collect_use_targets(node: Node<'_>, bytes: &[u8], imports: &mut Vec<String>) 
         return;
     };
 
-    collect_use_tree(use_tree.trim().trim_end_matches(';'), "", imports);
+    collect_use_tree(use_tree.trim().trim_end_matches(';'), "", node, imports);
 }
 
-fn collect_use_tree(tree: &str, prefix: &str, imports: &mut Vec<String>) {
+fn collect_use_tree(tree: &str, prefix: &str, node: Node<'_>, imports: &mut Vec<RawImport>) {
     let tree = strip_alias(tree.trim());
     if tree.is_empty() || tree == "*" {
-        push_use(prefix, imports);
+        push_use(prefix, node, imports);
         return;
     }
 
@@ -63,22 +67,22 @@ fn collect_use_tree(tree: &str, prefix: &str, imports: &mut Vec<String>) {
         let close = tree.rfind('}').unwrap_or(tree.len());
         let inner = &tree[open + 1..close];
         for item in split_top_level(inner) {
-            collect_use_tree(item, &combined_prefix, imports);
+            collect_use_tree(item, &combined_prefix, node, imports);
         }
         return;
     }
 
-    push_use(&join_path(prefix, tree), imports);
+    push_use(&join_path(prefix, tree), node, imports);
 }
 
 fn strip_alias(value: &str) -> &str {
     value.split(" as ").next().unwrap_or(value).trim()
 }
 
-fn push_use(path: &str, imports: &mut Vec<String>) {
+fn push_use(path: &str, node: Node<'_>, imports: &mut Vec<RawImport>) {
     let path = path.trim().trim_matches(':');
     if !path.is_empty() {
-        imports.push(format!("use:{path}"));
+        imports.push(RawImport::new(path, RawImportKind::Symbol, node));
     }
 }
 

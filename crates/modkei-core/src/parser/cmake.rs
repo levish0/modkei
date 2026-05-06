@@ -1,9 +1,10 @@
 use tree_sitter::Node;
 
-pub fn extract(root: Node<'_>, bytes: &[u8]) -> Vec<String> {
+use super::{RawImport, RawImportKind};
+
+pub fn extract(root: Node<'_>, bytes: &[u8]) -> Vec<RawImport> {
     let mut imports = Vec::new();
     let mut stack = vec![root];
-    let mut cursor = root.walk();
 
     while let Some(node) = stack.pop() {
         if node.kind() == "normal_command" {
@@ -20,14 +21,15 @@ pub fn extract(root: Node<'_>, bytes: &[u8]) -> Vec<String> {
                     for arg in child.children(&mut arg_cursor) {
                         if arg.kind() == "argument" {
                             let val = super::text(arg, bytes).trim().trim_matches('"');
-                            imports.push(format!("include:{}", val));
-                            break; // Just take the first argument
+                            imports.push(RawImport::new(val, RawImportKind::Include, arg));
+                            break;
                         }
                     }
                 }
             }
         }
 
+        let mut cursor = node.walk();
         for child in node.children(&mut cursor) {
             stack.push(child);
         }

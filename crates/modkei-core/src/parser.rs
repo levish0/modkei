@@ -8,11 +8,48 @@ mod python;
 mod rust;
 mod typescript;
 
+use serde::Serialize;
 use tree_sitter::{Node, Parser};
 
 use crate::Language;
 
-pub fn extract_imports(source: &str, language: Language) -> Vec<String> {
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Serialize)]
+pub enum RawImportKind {
+    Module,
+    Symbol,
+    SideEffect,
+    Dynamic,
+    ReExport,
+    Include,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize)]
+pub struct RawImport {
+    pub target: String,
+    pub kind: RawImportKind,
+    pub symbols: Vec<String>,
+    pub byte_start: usize,
+    pub byte_end: usize,
+}
+
+impl RawImport {
+    pub fn new(target: impl Into<String>, kind: RawImportKind, node: Node<'_>) -> Self {
+        Self {
+            target: target.into(),
+            kind,
+            symbols: Vec::new(),
+            byte_start: node.start_byte(),
+            byte_end: node.end_byte(),
+        }
+    }
+
+    pub fn with_symbols(mut self, symbols: Vec<String>) -> Self {
+        self.symbols = symbols;
+        self
+    }
+}
+
+pub fn extract_imports(source: &str, language: Language) -> Vec<RawImport> {
     let Some(ts_language) = language.tree_sitter() else {
         return Vec::new();
     };
@@ -37,27 +74,38 @@ pub fn extract_imports(source: &str, language: Language) -> Vec<String> {
         Language::CMake => cmake::extract(tree.root_node(), source.as_bytes()),
         Language::Unknown => Vec::new(),
     };
-    imports.retain(|item| !item.is_empty());
-    imports.sort();
-    imports.dedup();
+    imports.retain(|item| !item.target.is_empty());
+    imports.sort_by(|left, right| {
+        left.target
+            .cmp(&right.target)
+            .then_with(|| left.byte_start.cmp(&right.byte_start))
+            .then_with(|| left.byte_end.cmp(&right.byte_end))
+    });
+    imports.dedup_by(|left, right| {
+        left.target == right.target
+            && left.kind == right.kind
+            && left.symbols == right.symbols
+            && left.byte_start == right.byte_start
+            && left.byte_end == right.byte_end
+    });
     imports
 }
 
 pub(super) fn collect_string_literals(
     root: Node<'_>,
     bytes: &[u8],
-    imports: &mut Vec<String>,
-    prefix: &str,
+    imports: &mut Vec<RawImport>,
+    kind: RawImportKind,
 ) {
     let mut stack = vec![root];
-    let mut cursor = root.walk();
     while let Some(node) = stack.pop() {
         match node.kind() {
-            "string_fragment" => imports.push(format!("{prefix}{}", text(node, bytes))),
+            "string_fragment" => imports.push(RawImport::new(text(node, bytes), kind, node)),
             "interpreted_string_literal" | "raw_string_literal" | "string" => {
-                imports.push(format!("{prefix}{}", unquote(text(node, bytes))));
+                imports.push(RawImport::new(unquote(text(node, bytes)), kind, node));
             }
             _ => {
+                let mut cursor = node.walk();
                 for child in node.children(&mut cursor) {
                     stack.push(child);
                 }
@@ -80,87 +128,4 @@ pub(super) fn unquote(value: &str) -> String {
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn rust_extracts_use_trees_as_module_paths() {
-        let imports = extract_imports(
-            r#"
-            mod parser;
-            pub use parser::parse;
-            use crate::graph::{Edge, Node};
-            use super::module::Resolver as ModuleResolver;
-            "#,
-            Language::Rust,
-        );
-
-        assert_eq!(
-            imports,
-            vec![
-                "mod:parser",
-                "use:crate::graph::Edge",
-                "use:crate::graph::Node",
-                "use:parser::parse",
-                "use:super::module::Resolver"
-            ]
-        );
-    }
-
-    #[test]
-    fn typescript_extracts_import_sources() {
-        let imports = extract_imports(
-            r#"
-            import Graph from "graphology";
-            import { x } from "./local";
-            export * from "../shared";
-            "#,
-            Language::TypeScript,
-        );
-
-        assert_eq!(
-            imports,
-            vec!["module:../shared", "module:./local", "module:graphology"]
-        );
-    }
-
-    #[test]
-    fn python_extracts_import_sources() {
-        let imports = extract_imports(
-            r#"
-            import os
-            import package.module as module
-            from .utils import thing
-            "#,
-            Language::Python,
-        );
-
-        assert_eq!(
-            imports,
-            vec!["module:.utils", "module:os", "module:package.module"]
-        );
-    }
-
-    #[test]
-    fn go_extracts_import_sources() {
-        let imports = extract_imports(
-            r#"
-            import "fmt"
-            import (
-                "example.com/project/pkg"
-                alias "example.com/project/internal/tool"
-            )
-            "#,
-            Language::Go,
-        );
-
-        assert_eq!(
-            imports,
-            vec![
-                "module:example.com/project/internal/tool",
-                "module:example.com/project/pkg",
-                "module:fmt"
-            ]
-        );
-    }
-}
+mod tests;

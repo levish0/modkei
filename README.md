@@ -1,8 +1,8 @@
 # modkei
 
-**modkei** is a blazing fast Rust CLI tool for exploring code statistics and file dependency graphs. 
+**modkei** is a Rust CLI tool for analyzing source code and visualizing file dependencies as an interactive graph.
 
-It scans your source directory, prints a `tokei`-like breakdown of lines of code by language, and automatically opens a beautiful, interactive node-graph visualization of your file dependencies in the browser. 
+It scans your source directory, prints a language breakdown in the terminal, and opens an interactive dependency graph in the browser.
 
 > ✨ **Inspired by Obsidian**: The visualizer is heavily inspired by Obsidian's interactive graph view, helping you intuitively understand your codebase's architecture and module relationships at a glance.
 

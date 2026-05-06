@@ -1,9 +1,11 @@
 mod graph;
 mod lang;
 mod parser;
+mod resolver;
 mod stats;
 mod walker;
 
 pub use graph::{Edge, GraphData, Node, build_graph};
 pub use lang::Language;
+pub use parser::{RawImport, RawImportKind};
 pub use walker::{FileResult, IgnoreOptions, ImportEdge, ScanOptions, ScanOutput, scan};

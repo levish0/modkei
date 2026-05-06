@@ -9,7 +9,11 @@ use ignore::WalkBuilder;
 use rayon::prelude::*;
 use serde::Serialize;
 
-use crate::{Language, build_graph, parser, stats};
+use crate::{
+    Language, RawImportKind, build_graph,
+    parser::{self},
+    stats,
+};
 
 #[derive(Debug, Clone, Copy, Default)]
 pub struct IgnoreOptions {
@@ -38,7 +42,11 @@ pub struct FileResult {
 #[derive(Debug, Clone, Serialize)]
 pub struct ImportEdge {
     pub from: PathBuf,
-    pub to: String,
+    pub target: String,
+    pub kind: RawImportKind,
+    pub symbols: Vec<String>,
+    pub byte_start: usize,
+    pub byte_end: usize,
     pub language: Language,
 }
 
@@ -86,7 +94,8 @@ fn collect_files(root: &Path, options: ScanOptions) -> Result<Vec<PathBuf>> {
         .ignore(!ignore.no_ignore_dot)
         .git_ignore(!ignore.no_ignore_vcs)
         .git_global(!ignore.no_ignore_vcs)
-        .git_exclude(!ignore.no_ignore_vcs);
+        .git_exclude(!ignore.no_ignore_vcs)
+        .require_git(false);
     if ignore.no_ignore {
         builder
             .parents(false)
@@ -117,9 +126,13 @@ fn analyze_file(root: &Path, path: &Path) -> Result<(FileResult, Vec<ImportEdge>
     let rel_path = normalize_path(path.strip_prefix(root).unwrap_or(path));
     let imports = parser::extract_imports(&source, language)
         .into_iter()
-        .map(|to| ImportEdge {
+        .map(|raw| ImportEdge {
             from: path.to_path_buf(),
-            to,
+            target: raw.target,
+            kind: raw.kind,
+            symbols: raw.symbols,
+            byte_start: raw.byte_start,
+            byte_end: raw.byte_end,
             language,
         })
         .collect();

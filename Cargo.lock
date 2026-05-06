@@ -511,6 +511,7 @@ dependencies = [
  "ignore",
  "rayon",
  "serde",
+ "serde_json",
  "tree-sitter",
  "tree-sitter-bash",
  "tree-sitter-c",

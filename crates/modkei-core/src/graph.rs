@@ -1,6 +1,3 @@
-mod module;
-mod rust;
-
 use std::{
     collections::{HashMap, HashSet},
     path::{Path, PathBuf},
@@ -10,7 +7,7 @@ use serde::Serialize;
 
 use crate::{
     Language,
-    walker::{FileResult, ImportEdge, normalize_path},
+    walker::{FileResult, ImportEdge},
 };
 
 #[derive(Debug, Clone, Serialize)]
@@ -63,9 +60,7 @@ pub fn build_graph(root: &Path, files: &[FileResult], imports: &[ImportEdge]) ->
         let Some(source) = rel_by_abs.get(&import.from) else {
             continue;
         };
-        let Some(target) =
-            resolve_import(root, &import.from, import.language, &import.to, &rel_set)
-        else {
+        let Some(target) = crate::resolver::resolve(root, import, &rel_set) else {
             continue;
         };
         if source == &target || !seen.insert((source.clone(), target.clone())) {
@@ -74,70 +69,17 @@ pub fn build_graph(root: &Path, files: &[FileResult], imports: &[ImportEdge]) ->
         edges.push(Edge {
             source: source.clone(),
             target,
-            label: display_import_label(&import.to),
+            label: display_import_label(import),
         });
     }
 
     GraphData { nodes, edges }
 }
 
-fn display_import_label(raw: &str) -> String {
-    raw.strip_prefix("module:")
-        .or_else(|| raw.strip_prefix("mod:"))
-        .or_else(|| raw.strip_prefix("use:"))
-        .or_else(|| raw.strip_prefix("include:"))
-        .unwrap_or(raw)
-        .to_string()
-}
-
-fn resolve_import(
-    root: &Path,
-    from: &Path,
-    language: Language,
-    raw: &str,
-    rel_set: &HashSet<String>,
-) -> Option<String> {
-    match language {
-        Language::TypeScript | Language::JavaScript => {
-            module::resolve_relative(from, raw, root, rel_set, &["ts", "tsx", "js", "jsx"])
-        }
-        Language::Python => module::resolve_python(from, raw, root, rel_set),
-        Language::Rust => rust::resolve(root, from, raw, rel_set),
-        Language::Go => module::resolve_go(raw, rel_set),
-        Language::C | Language::Cpp => {
-            let path = raw.strip_prefix("include:")?;
-            // Usually, includes already have the extension (.h, .hpp), so we just join it.
-            // If it starts with a common directory (e.g. include/ or src/), it's usually relative to workspace root or current dir.
-            let candidates = vec![
-                from.parent()?.join(path),
-                root.join(path),
-                root.join("include").join(path),
-                root.join("src").join(path),
-            ];
-            candidates.into_iter().find_map(|c| {
-                resolve_candidate(root, &c, rel_set, &["h", "hpp", "c", "cpp", "cxx", "cc"])
-            })
-        }
-        Language::Unknown | Language::Java | Language::Bash | Language::Make | Language::CMake => {
-            None
-        }
+fn display_import_label(import: &ImportEdge) -> String {
+    if import.symbols.is_empty() {
+        import.target.clone()
+    } else {
+        format!("{}::{}", import.target, import.symbols.join(","))
     }
-}
-
-pub(super) fn resolve_candidate(
-    root: &Path,
-    candidate: &Path,
-    rel_set: &HashSet<String>,
-    exts: &[&str],
-) -> Option<String> {
-    let rel = candidate.strip_prefix(root).unwrap_or(candidate);
-    let base = normalize_path(rel);
-    let mut options = vec![base.clone()];
-    for ext in exts {
-        options.push(format!("{base}.{ext}"));
-        options.push(format!("{base}/mod.{ext}"));
-        options.push(format!("{base}/index.{ext}"));
-        options.push(format!("{base}/__init__.{ext}"));
-    }
-    options.into_iter().find(|path| rel_set.contains(path))
 }
