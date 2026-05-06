@@ -12,7 +12,7 @@ use indicatif::{ProgressBar, ProgressStyle};
 use modkei_core::{FileResult, IgnoreOptions, Language, ScanOptions};
 
 #[derive(Debug, Parser)]
-#[command(version, about = "Explore code statistics and file dependencies.")]
+#[command(version, about = "Explore Rust code statistics and file dependencies.")]
 struct Cli {
     /// Directory to analyze.
     #[arg(default_value = ".")]

@@ -5,10 +5,7 @@ use std::{
 
 use serde::Serialize;
 
-use crate::{
-    Language,
-    walker::{FileResult, ImportEdge},
-};
+use crate::{Language, ResolvedEdge, walker::FileResult};
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Node {
@@ -32,13 +29,15 @@ pub struct GraphData {
     pub edges: Vec<Edge>,
 }
 
-pub fn build_graph(root: &Path, files: &[FileResult], imports: &[ImportEdge]) -> GraphData {
+pub fn build_graph(
+    _root: &Path,
+    files: &[FileResult],
+    semantic_edges: &[ResolvedEdge],
+) -> GraphData {
     let rel_by_abs: HashMap<PathBuf, String> = files
         .iter()
         .map(|file| (file.path.clone(), file.rel_path.clone()))
         .collect();
-    let rel_set: HashSet<String> = files.iter().map(|file| file.rel_path.clone()).collect();
-
     let nodes = files
         .iter()
         .map(|file| Node {
@@ -56,30 +55,22 @@ pub fn build_graph(root: &Path, files: &[FileResult], imports: &[ImportEdge]) ->
 
     let mut seen = HashSet::new();
     let mut edges = Vec::new();
-    for import in imports {
-        let Some(source) = rel_by_abs.get(&import.from) else {
+    for edge in semantic_edges {
+        let Some(source) = rel_by_abs.get(&edge.from) else {
             continue;
         };
-        let Some(target) = crate::resolver::resolve(root, import, &rel_set) else {
+        let Some(target) = rel_by_abs.get(&edge.to) else {
             continue;
         };
-        if source == &target || !seen.insert((source.clone(), target.clone())) {
+        if source == target || !seen.insert((source.clone(), target.clone())) {
             continue;
         }
         edges.push(Edge {
             source: source.clone(),
-            target,
-            label: display_import_label(import),
+            target: target.clone(),
+            label: edge.label.clone(),
         });
     }
 
     GraphData { nodes, edges }
-}
-
-fn display_import_label(import: &ImportEdge) -> String {
-    if import.symbols.is_empty() {
-        import.target.clone()
-    } else {
-        format!("{}::{}", import.target, import.symbols.join(","))
-    }
 }

@@ -8,20 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.5] - 2026-05-06
 
 ### Changed
-- Split dependency resolution out of graph construction into a dedicated `resolver` layer.
-- Reworked import extraction to preserve structured raw import metadata instead of encoding import kinds in string prefixes.
-- Updated package metadata and README wording to describe the project directly as source analysis plus interactive dependency visualization.
+- Narrowed the analyzer scope to Rust so dependency graph quality is driven by Rust semantics instead of multi-language tree-sitter heuristics.
+- Replaced the Rust dependency graph path with a `rust-analyzer` backend for workspace-aware resolution.
+- Kept a Rust syntax fallback for manifest-less module trees such as ad-hoc `src/lib.rs` + `mod foo;` layouts.
+- Updated package metadata and README wording to describe the project as a Rust codebase analyzer.
 
 ### Added
-- Added language-specific parser tests under `modkei-core/src/parser/tests/`.
-- Added graph resolution coverage for Rust multi-crate layouts, TypeScript path aliases, TypeScript package-local configs, Python package/file modules, Go nested modules, C/C++ includes, and `.gitignore` handling.
-- Added TypeScript/JavaScript resolver support for nearest `tsconfig.json`/`jsconfig.json` `baseUrl` and `paths`.
-- Added Go resolver support for nearest `go.mod` in nested module layouts.
-
-### Fixed
-- Fixed Python `from ... import ... as ...` extraction to keep imported symbols instead of aliases.
-- Fixed `.gitignore` handling outside Git repositories by disabling the `ignore` crate's Git-repository requirement.
-- Fixed Go module resolution so nested modules resolve relative to the nearest `go.mod` directory.
+- Added Rust graph coverage for manifest-less module files, `mod.rs` directories, workspace member resolution, and default `.gitignore` handling.
 
 ## [0.1.4] - 2025-05-06
 Bump workspace version to 0.1.4
