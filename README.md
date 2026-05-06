@@ -4,6 +4,12 @@
 
 It scans your source directory, prints a language breakdown in the terminal, and opens an interactive dependency graph in the browser.
 
+[![Crates.io](https://img.shields.io/crates/v/modkei.svg)](https://crates.io/crates/modkei)
+[![Documentation](https://docs.rs/modkei/badge.svg)](https://docs.rs/modkei)
+[![Downloads](https://img.shields.io/crates/d/modkei.svg)](https://crates.io/crates/modkei)
+[![License](https://img.shields.io/badge/License-Apache--2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Rust](https://img.shields.io/badge/rust-1.95.0+-orange.svg?logo=rust)](https://www.rust-lang.org/)
+
 > ✨ **Inspired by Obsidian**: The visualizer is heavily inspired by Obsidian's interactive graph view, helping you intuitively understand your codebase's architecture and module relationships at a glance.
 
 ## Installation
