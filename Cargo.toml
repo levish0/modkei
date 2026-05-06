@@ -3,7 +3,7 @@ members = ["crates/*", "xtask"]
 resolver = "3"
 
 [workspace.package]
-version = "0.1.5"
+version = "0.1.6"
 authors = ["Levi Laine <shiueo.csh@gmail.com>"]
 repository = "https://github.com/levish0/modkei"
 description = "Analyze Rust code and visualize file dependencies as an interactive graph."
@@ -16,8 +16,8 @@ readme = "README.md"
 
 [workspace.dependencies]
 # Internal crates
-modkei-core = { path = "crates/modkei-core", version = "0.1.5" }
-modkei-report = { path = "crates/modkei-report", version = "0.1.5" }
+modkei-core = { path = "crates/modkei-core", version = "0.1.6" }
+modkei-report = { path = "crates/modkei-report", version = "0.1.6" }
 
 # External dependencies
 anyhow = "1.0.102"
