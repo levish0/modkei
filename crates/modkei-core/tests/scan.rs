@@ -121,6 +121,42 @@ fn gitignore_is_respected_by_default() {
     let _ = fs::remove_dir_all(root);
 }
 
+#[test]
+fn rust_broken_workspace_should_fallback_to_syntax_analysis() {
+    let root = unique_temp_dir();
+    fs::create_dir_all(root.join("broken/src")).unwrap();
+    // Root manifest that doesn't include the subdirectory
+    fs::write(
+        root.join("Cargo.toml"),
+        r#"[workspace]
+members = []
+"#,
+    )
+    .unwrap();
+    // Subdirectory manifest that thinks it's part of the workspace (implicit)
+    fs::write(
+        root.join("broken/Cargo.toml"),
+        r#"[package]
+name = "broken"
+version = "0.1.0"
+"#,
+    )
+    .unwrap();
+    fs::write(root.join("broken/src/lib.rs"), "mod parser;").unwrap();
+    fs::write(root.join("broken/src/parser.rs"), "pub fn parse() {}").unwrap();
+
+    let output = scan_dir(&root);
+
+    // Should still have the edge because of fallback_edges
+    assert_edge(
+        &output.graph.edges,
+        "broken/src/lib.rs",
+        "broken/src/parser.rs",
+    );
+
+    let _ = fs::remove_dir_all(root);
+}
+
 fn scan_dir(root: &std::path::Path) -> modkei_core::ScanOutput {
     let (tx, rx) = unbounded();
     let output = modkei_core::scan(

@@ -40,16 +40,26 @@ pub fn semantic_edges(root: &Path, files: &[PathBuf]) -> Result<Vec<ResolvedEdge
 
     let mut edges = Vec::new();
     for (manifest, group_files) in grouped {
-        edges.extend(workspace_edges(
+        match workspace_edges(
             &canonical_root,
             &manifest,
             &group_files,
             &file_set,
             &file_map,
-        )?);
+        ) {
+            Ok(workspace_edges) => edges.extend(workspace_edges),
+            Err(e) => {
+                eprintln!(
+                    "warning: failed to load workspace at {}: {}. falling back to syntax analysis.",
+                    manifest.display(),
+                    e
+                );
+                edges.extend(fallback_edges(&canonical_root, &group_files, &file_map)?);
+            }
+        }
     }
     if !standalone.is_empty() {
-        edges.extend(fallback_edges(root, &standalone, &file_map)?);
+        edges.extend(fallback_edges(&canonical_root, &standalone, &file_map)?);
     }
 
     Ok(dedup_edges(edges))
