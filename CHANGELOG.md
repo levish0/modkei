@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] - 2026-05-06
+
+### Changed
+- Split dependency resolution out of graph construction into a dedicated `resolver` layer.
+- Reworked import extraction to preserve structured raw import metadata instead of encoding import kinds in string prefixes.
+- Updated package metadata and README wording to describe the project directly as source analysis plus interactive dependency visualization.
+
+### Added
+- Added language-specific parser tests under `modkei-core/src/parser/tests/`.
+- Added graph resolution coverage for Rust multi-crate layouts, TypeScript path aliases, TypeScript package-local configs, Python package/file modules, Go nested modules, C/C++ includes, and `.gitignore` handling.
+- Added TypeScript/JavaScript resolver support for nearest `tsconfig.json`/`jsconfig.json` `baseUrl` and `paths`.
+- Added Go resolver support for nearest `go.mod` in nested module layouts.
+
+### Fixed
+- Fixed Python `from ... import ... as ...` extraction to keep imported symbols instead of aliases.
+- Fixed `.gitignore` handling outside Git repositories by disabling the `ignore` crate's Git-repository requirement.
+- Fixed Go module resolution so nested modules resolve relative to the nearest `go.mod` directory.
+
 ## [0.1.4] - 2025-05-06
 Bump workspace version to 0.1.4
 
