@@ -123,19 +123,13 @@
 					<Switch bind:checked={showArrows} />
 				</div>
 				<ControlRow label="Text fade" value={String(textFadeThreshold)}>
-					{#snippet children()}
-						<Slider type="single" bind:value={textFadeThreshold} min={0} max={24} step={1} />
-					{/snippet}
+					<Slider type="single" bind:value={textFadeThreshold} min={0} max={24} step={1} />
 				</ControlRow>
 				<ControlRow label="Node size" value={nodeSize.toFixed(2)}>
-					{#snippet children()}
-						<Slider type="single" bind:value={nodeSize} min={0.3} max={3} step={0.05} />
-					{/snippet}
+					<Slider type="single" bind:value={nodeSize} min={0.3} max={3} step={0.05} />
 				</ControlRow>
 				<ControlRow label="Link thickness" value={linkThickness.toFixed(1)}>
-					{#snippet children()}
-						<Slider type="single" bind:value={linkThickness} min={0.2} max={5} step={0.1} />
-					{/snippet}
+					<Slider type="single" bind:value={linkThickness} min={0.2} max={5} step={0.1} />
 				</ControlRow>
 			</div>
 		{/if}
@@ -156,24 +150,16 @@
 		{#if forcesOpen}
 			<div class="flex flex-col gap-4 px-4 pb-4">
 				<ControlRow label="Center force" value={centerForce.toFixed(2)}>
-					{#snippet children()}
-						<Slider type="single" bind:value={centerForce} min={0} max={5} step={0.01} />
-					{/snippet}
+					<Slider type="single" bind:value={centerForce} min={0} max={5} step={0.01} />
 				</ControlRow>
 				<ControlRow label="Repel force" value={String(Math.round(repelForce))}>
-					{#snippet children()}
-						<Slider type="single" bind:value={repelForce} min={0} max={10000} step={1} />
-					{/snippet}
+					<Slider type="single" bind:value={repelForce} min={0} max={10000} step={1} />
 				</ControlRow>
 				<ControlRow label="Link force" value={linkForce.toFixed(2)}>
-					{#snippet children()}
-						<Slider type="single" bind:value={linkForce} min={0} max={5} step={0.01} />
-					{/snippet}
+					<Slider type="single" bind:value={linkForce} min={0} max={5} step={0.01} />
 				</ControlRow>
 				<ControlRow label="Link distance" value={String(Math.round(linkDistance))}>
-					{#snippet children()}
-						<Slider type="single" bind:value={linkDistance} min={0} max={1000} step={1} />
-					{/snippet}
+					<Slider type="single" bind:value={linkDistance} min={0} max={1000} step={1} />
 				</ControlRow>
 			</div>
 		{/if}
@@ -201,7 +187,7 @@
 		<!-- Language legend -->
 		{#if languageEntries.length > 0}
 			<div class="mx-4 mb-4 mt-1 flex flex-wrap gap-1.5">
-				{#each languageEntries as entry}
+				{#each languageEntries as entry (entry.language)}
 					<span
 						class="inline-flex items-center gap-1.5 rounded-full border border-neutral-800 bg-neutral-950 px-2 py-0.5 text-[11px] text-neutral-600"
 					>
