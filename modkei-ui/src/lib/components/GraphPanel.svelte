@@ -60,7 +60,7 @@
 >
 	<!-- Header -->
 	<div
-		class="shrink-0 border-b border-neutral-800 bg-gradient-to-br from-neutral-800/40 to-transparent px-4 pt-4 pb-3"
+		class="shrink-0 border-b border-neutral-800 bg-linear-to-br from-neutral-800/40 to-transparent px-4 pt-4 pb-3"
 	>
 		<h1 class="text-sm font-bold tracking-tight text-neutral-100">modkei</h1>
 		<p class="mt-1 text-xs text-neutral-600">
