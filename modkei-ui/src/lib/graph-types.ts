@@ -12,7 +12,13 @@ export type Language =
 	| 'CMake'
 	| 'Unknown';
 
-export type GraphNode = { id: string; label: string; language: Language; lines: number; code: number };
+export type GraphNode = {
+	id: string;
+	label: string;
+	language: Language;
+	lines: number;
+	code: number;
+};
 export type GraphEdge = { source: string; target: string; label: string };
 export type GraphData = { nodes: GraphNode[]; edges: GraphEdge[] };
 export type SimNode = { id: string; x: number; y: number; fx?: number | null; fy?: number | null };

@@ -275,9 +275,7 @@
 				return visibleNodes.has(sid) && visibleNodes.has(tid);
 			});
 			simulation.nodes(activeNodes);
-			const linkForceInstance = simulation.force('link') as
-				| ForceLink<SimNode, SimLink>
-				| undefined;
+			const linkForceInstance = simulation.force('link') as ForceLink<SimNode, SimLink> | undefined;
 			if (linkForceInstance) linkForceInstance.links(activeLinks);
 			simulation.alpha(1).restart();
 		}
@@ -310,7 +308,13 @@
 		const r2 = parseInt(b.slice(1, 3), 16),
 			g2 = parseInt(b.slice(3, 5), 16),
 			b2 = parseInt(b.slice(5, 7), 16);
-		return `#${c(r1 + (r2 - r1) * t).toString(16).padStart(2, '0')}${c(g1 + (g2 - g1) * t).toString(16).padStart(2, '0')}${c(b1 + (b2 - b1) * t).toString(16).padStart(2, '0')}`;
+		return `#${c(r1 + (r2 - r1) * t)
+			.toString(16)
+			.padStart(2, '0')}${c(g1 + (g2 - g1) * t)
+			.toString(16)
+			.padStart(2, '0')}${c(b1 + (b2 - b1) * t)
+			.toString(16)
+			.padStart(2, '0')}`;
 	}
 
 	// ── Selection ──────────────────────────────────────────────────────────────

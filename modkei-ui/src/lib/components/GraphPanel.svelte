@@ -56,11 +56,11 @@
 </script>
 
 <aside
-	class="absolute top-0 right-0 bottom-0 w-64 flex flex-col bg-neutral-900 border-l border-neutral-800"
+	class="absolute top-0 right-0 bottom-0 flex w-64 flex-col border-l border-neutral-800 bg-neutral-900"
 >
 	<!-- Header -->
 	<div
-		class="shrink-0 px-4 pt-4 pb-3 border-b border-neutral-800 bg-gradient-to-br from-neutral-800/40 to-transparent"
+		class="shrink-0 border-b border-neutral-800 bg-gradient-to-br from-neutral-800/40 to-transparent px-4 pt-4 pb-3"
 	>
 		<h1 class="text-sm font-bold tracking-tight text-neutral-100">modkei</h1>
 		<p class="mt-1 text-xs text-neutral-600">
@@ -69,13 +69,15 @@
 	</div>
 
 	<!-- Scrollable body -->
-	<ScrollArea class="flex-1 min-h-0">
+	<ScrollArea class="min-h-0 flex-1">
 		<!-- Filters -->
 		<button
-			class="flex w-full items-center gap-1.5 border-t border-neutral-800/60 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-neutral-600 transition-colors hover:text-neutral-400"
+			class="flex w-full items-center gap-1.5 border-t border-neutral-800/60 px-4 py-2.5 text-[10px] font-bold tracking-widest text-neutral-600 uppercase transition-colors hover:text-neutral-400"
 			onclick={() => (filtersOpen = !filtersOpen)}
 		>
-			<span class={cn('text-neutral-700 transition-transform duration-200', filtersOpen && 'rotate-90')}>
+			<span
+				class={cn('text-neutral-700 transition-transform duration-200', filtersOpen && 'rotate-90')}
+			>
 				<Icon src={ChevronRight} size="12" />
 			</span>
 			Filters
@@ -85,7 +87,7 @@
 			<div class="flex flex-col gap-3 px-4 pb-4">
 				<div class="relative">
 					<span
-						class="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-600"
+						class="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-neutral-600"
 					>
 						<Icon src={MagnifyingGlass} size="13" />
 					</span>
@@ -105,7 +107,7 @@
 
 		<!-- Display -->
 		<button
-			class="flex w-full items-center gap-1.5 border-t border-neutral-800/60 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-neutral-600 transition-colors hover:text-neutral-400"
+			class="flex w-full items-center gap-1.5 border-t border-neutral-800/60 px-4 py-2.5 text-[10px] font-bold tracking-widest text-neutral-600 uppercase transition-colors hover:text-neutral-400"
 			onclick={() => (displayOpen = !displayOpen)}
 		>
 			<span
@@ -136,7 +138,7 @@
 
 		<!-- Forces -->
 		<button
-			class="flex w-full items-center gap-1.5 border-t border-neutral-800/60 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-neutral-600 transition-colors hover:text-neutral-400"
+			class="flex w-full items-center gap-1.5 border-t border-neutral-800/60 px-4 py-2.5 text-[10px] font-bold tracking-widest text-neutral-600 uppercase transition-colors hover:text-neutral-400"
 			onclick={() => (forcesOpen = !forcesOpen)}
 		>
 			<span
@@ -167,26 +169,32 @@
 		<!-- Selected node card -->
 		{#if selected}
 			<Separator class="bg-neutral-800/60" />
-			<div class="mx-4 my-3 flex flex-col gap-1.5 rounded-lg border border-neutral-800 bg-neutral-950 p-3">
-				<p class="break-all text-xs font-semibold leading-snug text-neutral-200">{selected.label}</p>
+			<div
+				class="mx-4 my-3 flex flex-col gap-1.5 rounded-lg border border-neutral-800 bg-neutral-950 p-3"
+			>
+				<p class="text-xs leading-snug font-semibold break-all text-neutral-200">
+					{selected.label}
+				</p>
 				<div class="flex justify-between text-[11px]">
 					<span class="text-neutral-600">Language</span>
-					<span style="color:{colors[selected.language] ?? colors.Unknown}">{selected.language}</span>
+					<span style="color:{colors[selected.language] ?? colors.Unknown}"
+						>{selected.language}</span
+					>
 				</div>
 				<div class="flex justify-between text-[11px]">
 					<span class="text-neutral-600">Lines</span>
-					<span class="tabular-nums text-neutral-400">{selected.lines.toLocaleString()}</span>
+					<span class="text-neutral-400 tabular-nums">{selected.lines.toLocaleString()}</span>
 				</div>
 				<div class="flex justify-between text-[11px]">
 					<span class="text-neutral-600">Code lines</span>
-					<span class="tabular-nums text-neutral-400">{selected.code.toLocaleString()}</span>
+					<span class="text-neutral-400 tabular-nums">{selected.code.toLocaleString()}</span>
 				</div>
 			</div>
 		{/if}
 
 		<!-- Language legend -->
 		{#if languageEntries.length > 0}
-			<div class="mx-4 mb-4 mt-1 flex flex-wrap gap-1.5">
+			<div class="mx-4 mt-1 mb-4 flex flex-wrap gap-1.5">
 				{#each languageEntries as entry (entry.language)}
 					<span
 						class="inline-flex items-center gap-1.5 rounded-full border border-neutral-800 bg-neutral-950 px-2 py-0.5 text-[11px] text-neutral-600"
