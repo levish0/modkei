@@ -32,25 +32,49 @@ pub struct FileResult {
     pub blanks: u64,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ProgressStage {
+    ScanningFiles,
+    ResolvingDependencies,
+    BuildingGraph,
+}
+
+impl ProgressStage {
+    pub fn message(self) -> &'static str {
+        match self {
+            Self::ScanningFiles => "scanning files",
+            Self::ResolvingDependencies => "resolving Rust dependencies",
+            Self::BuildingGraph => "building graph",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ProgressEvent {
+    Stage(ProgressStage),
+    FileScanned,
+}
+
 #[derive(Debug, Clone)]
 pub struct ScanOutput {
     pub files: Vec<FileResult>,
     pub graph: crate::GraphData,
 }
 
-pub fn scan(root: &Path, options: ScanOptions, tx: Sender<FileResult>) -> Result<ScanOutput> {
+pub fn scan(root: &Path, options: ScanOptions, tx: Sender<ProgressEvent>) -> Result<ScanOutput> {
     let files = collect_files(root, options)?;
     let results = std::sync::Mutex::new(Vec::new());
 
+    let _ = tx.send(ProgressEvent::Stage(ProgressStage::ScanningFiles));
     files.par_iter().for_each(|path| {
         if let Ok(file) = analyze_file(root, path) {
-            let _ = tx.send(file.clone());
+            let _ = tx.send(ProgressEvent::FileScanned);
             results.lock().expect("results mutex poisoned").push(file);
         }
     });
-    drop(tx);
 
     let files = results.into_inner().expect("results mutex poisoned");
+    let _ = tx.send(ProgressEvent::Stage(ProgressStage::ResolvingDependencies));
     let semantic_edges = backend::semantic_edges(
         root,
         &files
@@ -58,7 +82,9 @@ pub fn scan(root: &Path, options: ScanOptions, tx: Sender<FileResult>) -> Result
             .map(|file| file.path.clone())
             .collect::<Vec<_>>(),
     )?;
+    let _ = tx.send(ProgressEvent::Stage(ProgressStage::BuildingGraph));
     let graph = build_graph(root, &files, &semantic_edges);
+    drop(tx);
 
     Ok(ScanOutput { files, graph })
 }

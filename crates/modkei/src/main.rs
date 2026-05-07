@@ -9,7 +9,7 @@ use anyhow::{Context, Result};
 use clap::Parser;
 use crossbeam_channel::unbounded;
 use indicatif::{ProgressBar, ProgressStyle};
-use modkei_core::{FileResult, IgnoreOptions, Language, ScanOptions};
+use modkei_core::{FileResult, IgnoreOptions, Language, ProgressEvent, ProgressStage, ScanOptions};
 
 #[derive(Debug, Parser)]
 #[command(version, about = "Explore Rust code statistics and file dependencies.")]
@@ -65,14 +65,29 @@ fn main() -> Result<()> {
         },
     };
 
-    let (tx, rx) = unbounded::<FileResult>();
+    let (tx, rx) = unbounded::<ProgressEvent>();
     let progress = progress_bar();
     let started = Instant::now();
     let progress_thread = thread::spawn(move || {
         let mut files = 0usize;
-        while rx.recv().is_ok() {
-            files += 1;
-            progress.set_message(format!("scanned {files} files"));
+        let mut stage = ProgressStage::ScanningFiles;
+        while let Ok(event) = rx.recv() {
+            match event {
+                ProgressEvent::Stage(next_stage) => {
+                    stage = next_stage;
+                    let message = match stage {
+                        ProgressStage::ScanningFiles => format!("scanned {files} files"),
+                        _ => stage.message().to_string(),
+                    };
+                    progress.set_message(message);
+                }
+                ProgressEvent::FileScanned => {
+                    files += 1;
+                    if stage == ProgressStage::ScanningFiles {
+                        progress.set_message(format!("scanned {files} files"));
+                    }
+                }
+            }
             progress.tick();
         }
         progress.finish_with_message(format!(
@@ -116,7 +131,7 @@ fn progress_bar() -> ProgressBar {
             .tick_strings(&["-", "\\", "|", "/"]),
     );
     progress.enable_steady_tick(Duration::from_millis(90));
-    progress.set_message("scanning files");
+    progress.set_message(ProgressStage::ScanningFiles.message().to_string());
     progress
 }
 

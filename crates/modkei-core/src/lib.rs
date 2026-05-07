@@ -8,4 +8,6 @@ mod walker;
 pub use graph::{Edge, GraphData, Node, build_graph};
 pub use lang::Language;
 pub use model::ResolvedEdge;
-pub use walker::{FileResult, IgnoreOptions, ScanOptions, ScanOutput, scan};
+pub use walker::{
+    FileResult, IgnoreOptions, ProgressEvent, ProgressStage, ScanOptions, ScanOutput, scan,
+};
