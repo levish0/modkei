@@ -1052,8 +1052,8 @@ dependencies = [
  "ra_ap_ide",
  "ra_ap_load-cargo",
  "ra_ap_project_model",
- "ra_ap_syntax",
- "ra_ap_vfs",
+ "ra_ap_syntax 0.0.331",
+ "ra_ap_vfs 0.0.331",
  "rayon",
  "serde",
  "serde_json",
@@ -1336,8 +1336,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4b917ab47d7036977be4c984321af3e0de089229404d68ea9a286f50aa464697"
 dependencies = [
  "bitflags",
- "ra-ap-rustc_hashes",
- "ra-ap-rustc_index",
+ "ra-ap-rustc_hashes 0.160.0",
+ "ra-ap-rustc_index 0.160.0",
+ "tracing",
+]
+
+[[package]]
+name = "ra-ap-rustc_abi"
+version = "0.165.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2f25a779e21ca3bba6795193b16508c8ab159f96ee4b07349893fd272065b525"
+dependencies = [
+ "bitflags",
+ "ra-ap-rustc_hashes 0.165.0",
+ "ra-ap-rustc_index 0.165.0",
  "tracing",
 ]
 
@@ -1346,6 +1358,12 @@ name = "ra-ap-rustc_ast_ir"
 version = "0.160.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "021d80bea67458b8c90cc25bfdca6f911ea818a41905e370c1f310cced1dd07e"
+
+[[package]]
+name = "ra-ap-rustc_ast_ir"
+version = "0.165.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0218ca6c7b096466e85a497e6150c39be5b7bc36637fe62c1cd20370a9d9aac7"
 
 [[package]]
 name = "ra-ap-rustc_hashes"
@@ -1357,12 +1375,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "ra-ap-rustc_hashes"
+version = "0.165.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d6b410bacf1a7c8038f376fa6283003784d568ac012e35fc0aeefa9a5ab11a2e"
+dependencies = [
+ "rustc-stable-hash",
+]
+
+[[package]]
 name = "ra-ap-rustc_index"
 version = "0.160.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "84219d028a1954c4340ddde11adffe93eb83e476e942718fe926f4d99637cbbe"
 dependencies = [
- "ra-ap-rustc_index_macros",
+ "ra-ap-rustc_index_macros 0.160.0",
+]
+
+[[package]]
+name = "ra-ap-rustc_index"
+version = "0.165.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2271b55e4a5d0cc0cbe9bdf8056c07ac69e32919a48ce66722ed0526d62588c3"
+dependencies = [
+ "ra-ap-rustc_index_macros 0.165.0",
 ]
 
 [[package]]
@@ -1370,6 +1406,17 @@ name = "ra-ap-rustc_index_macros"
 version = "0.160.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3908fdfa258c663d8ee407e6b4a205b0880e323b533c0df7edceafbd54a02fb6"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "ra-ap-rustc_index_macros"
+version = "0.165.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b6a89e743fb881a1e13544e3395a5ad9ad9280d56384256a121066119abd7af2"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1388,15 +1435,39 @@ dependencies = [
 ]
 
 [[package]]
+name = "ra-ap-rustc_lexer"
+version = "0.165.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a6d7c9cc05e0e6b72a214a455a106d9b22b0494164d50a657b17bd319534c218"
+dependencies = [
+ "memchr",
+ "unicode-ident",
+ "unicode-properties",
+]
+
+[[package]]
 name = "ra-ap-rustc_next_trait_solver"
 version = "0.160.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "76f83dcc451bcee8a99e284a583d5b3d82db5a200107a256a40ef132c4988f1b"
 dependencies = [
  "derive-where",
- "ra-ap-rustc_index",
- "ra-ap-rustc_type_ir",
- "ra-ap-rustc_type_ir_macros",
+ "ra-ap-rustc_index 0.160.0",
+ "ra-ap-rustc_type_ir 0.160.0",
+ "ra-ap-rustc_type_ir_macros 0.160.0",
+ "tracing",
+]
+
+[[package]]
+name = "ra-ap-rustc_next_trait_solver"
+version = "0.165.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cb3017c2f0ace80b8e6068b9c613aa56ed50e0374bf44a891447511f1264e40d"
+dependencies = [
+ "derive-where",
+ "ra-ap-rustc_index 0.165.0",
+ "ra-ap-rustc_type_ir 0.165.0",
+ "ra-ap-rustc_type_ir_macros 0.165.0",
  "tracing",
 ]
 
@@ -1406,7 +1477,17 @@ version = "0.160.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f31236bdc6cbcae8af42d0b2db2fa8d812a8715b90a2ba5afb1132b37a4d0bbc"
 dependencies = [
- "ra-ap-rustc_lexer",
+ "ra-ap-rustc_lexer 0.160.0",
+ "rustc-literal-escaper 0.0.7",
+]
+
+[[package]]
+name = "ra-ap-rustc_parse_format"
+version = "0.165.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4a737f844bdef8ac5ab54dadf2f34704b4d06beef9236d71080bb34db697220b"
+dependencies = [
+ "ra-ap-rustc_lexer 0.165.0",
  "rustc-literal-escaper 0.0.7",
 ]
 
@@ -1416,7 +1497,20 @@ version = "0.160.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3fc4edac740e896fba4b3b4d9c423083e3eac49947732561ddfb2377e1f57829"
 dependencies = [
- "ra-ap-rustc_index",
+ "ra-ap-rustc_index 0.160.0",
+ "rustc-hash 2.1.2",
+ "rustc_apfloat",
+ "smallvec",
+ "tracing",
+]
+
+[[package]]
+name = "ra-ap-rustc_pattern_analysis"
+version = "0.165.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6de3d4c7d6078cce3c40c55717b8b15002a80b9fa8849faea496a365324861b4"
+dependencies = [
+ "ra-ap-rustc_index 0.165.0",
  "rustc-hash 2.1.2",
  "rustc_apfloat",
  "smallvec",
@@ -1434,10 +1528,31 @@ dependencies = [
  "derive-where",
  "ena",
  "indexmap",
- "ra-ap-rustc_abi",
- "ra-ap-rustc_ast_ir",
- "ra-ap-rustc_index",
- "ra-ap-rustc_type_ir_macros",
+ "ra-ap-rustc_abi 0.160.0",
+ "ra-ap-rustc_ast_ir 0.160.0",
+ "ra-ap-rustc_index 0.160.0",
+ "ra-ap-rustc_type_ir_macros 0.160.0",
+ "rustc-hash 2.1.2",
+ "smallvec",
+ "thin-vec",
+ "tracing",
+]
+
+[[package]]
+name = "ra-ap-rustc_type_ir"
+version = "0.165.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8c5d9a4d3e7bee7313599bc6d794037247ac0165f03857379cf4fc3097199e05"
+dependencies = [
+ "arrayvec",
+ "bitflags",
+ "derive-where",
+ "ena",
+ "indexmap",
+ "ra-ap-rustc_abi 0.165.0",
+ "ra-ap-rustc_ast_ir 0.165.0",
+ "ra-ap-rustc_index 0.165.0",
+ "ra-ap-rustc_type_ir_macros 0.165.0",
  "rustc-hash 2.1.2",
  "smallvec",
  "thin-vec",
@@ -1457,6 +1572,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "ra-ap-rustc_type_ir_macros"
+version = "0.165.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "024598d1f54272acd83d28c121f8a2e82e216dd7be1e40158b66b2d12fa214c0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+ "synstructure",
+]
+
+[[package]]
 name = "ra_ap_base_db"
 version = "0.0.331"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1465,12 +1592,35 @@ dependencies = [
  "dashmap",
  "indexmap",
  "la-arena",
- "ra_ap_cfg",
- "ra_ap_intern",
- "ra_ap_query-group-macro",
- "ra_ap_span",
- "ra_ap_syntax",
- "ra_ap_vfs",
+ "ra_ap_cfg 0.0.331",
+ "ra_ap_intern 0.0.331",
+ "ra_ap_query-group-macro 0.0.331",
+ "ra_ap_span 0.0.331",
+ "ra_ap_syntax 0.0.331",
+ "ra_ap_vfs 0.0.331",
+ "rustc-hash 2.1.2",
+ "salsa",
+ "salsa-macros",
+ "semver",
+ "tracing",
+ "triomphe",
+]
+
+[[package]]
+name = "ra_ap_base_db"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "224058d9a948b2e32b1bf249566813a2e43576267d8d61c5fa51927a77ccbd3f"
+dependencies = [
+ "dashmap",
+ "indexmap",
+ "la-arena",
+ "ra_ap_cfg 0.0.332",
+ "ra_ap_intern 0.0.332",
+ "ra_ap_query-group-macro 0.0.332",
+ "ra_ap_span 0.0.332",
+ "ra_ap_syntax 0.0.332",
+ "ra_ap_vfs 0.0.332",
  "rustc-hash 2.1.2",
  "salsa",
  "salsa-macros",
@@ -1485,9 +1635,22 @@ version = "0.0.331"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1c49485b5a4fb4a0a254a5720d4f5fca8150f78a4063e9447f4e802714cbb57c"
 dependencies = [
- "ra_ap_intern",
- "ra_ap_syntax",
- "ra_ap_tt",
+ "ra_ap_intern 0.0.331",
+ "ra_ap_syntax 0.0.331",
+ "ra_ap_tt 0.0.331",
+ "rustc-hash 2.1.2",
+ "tracing",
+]
+
+[[package]]
+name = "ra_ap_cfg"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "adb8c66c8e354a8596b1b958980f9dd99fd2db0cb99d8ba21585962e58302d5e"
+dependencies = [
+ "ra_ap_intern 0.0.332",
+ "ra_ap_syntax 0.0.332",
+ "ra_ap_tt 0.0.332",
  "rustc-hash 2.1.2",
  "tracing",
 ]
@@ -1499,6 +1662,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "60674fb53a5284daa0c3285abad4fa2b12d57307d2ac9c3fa39635c2c700079b"
 
 [[package]]
+name = "ra_ap_edition"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a3f8b83a206006da985412a63fdc9f8009254290c08b892735dcb3aa2791e80b"
+
+[[package]]
 name = "ra_ap_hir"
 version = "0.0.331"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1508,17 +1677,45 @@ dependencies = [
  "either",
  "itertools",
  "la-arena",
- "ra-ap-rustc_type_ir",
- "ra_ap_base_db",
- "ra_ap_cfg",
- "ra_ap_hir_def",
- "ra_ap_hir_expand",
- "ra_ap_hir_ty",
- "ra_ap_intern",
- "ra_ap_span",
- "ra_ap_stdx",
- "ra_ap_syntax",
- "ra_ap_tt",
+ "ra-ap-rustc_type_ir 0.160.0",
+ "ra_ap_base_db 0.0.331",
+ "ra_ap_cfg 0.0.331",
+ "ra_ap_hir_def 0.0.331",
+ "ra_ap_hir_expand 0.0.331",
+ "ra_ap_hir_ty 0.0.331",
+ "ra_ap_intern 0.0.331",
+ "ra_ap_span 0.0.331",
+ "ra_ap_stdx 0.0.331",
+ "ra_ap_syntax 0.0.331",
+ "ra_ap_tt 0.0.331",
+ "rustc-hash 2.1.2",
+ "serde_json",
+ "smallvec",
+ "tracing",
+ "triomphe",
+]
+
+[[package]]
+name = "ra_ap_hir"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4b0a1c888a88349cc79f4eb2d800aaa2b09b833f33167353ec9db2073b939464"
+dependencies = [
+ "arrayvec",
+ "either",
+ "itertools",
+ "la-arena",
+ "ra-ap-rustc_type_ir 0.165.0",
+ "ra_ap_base_db 0.0.332",
+ "ra_ap_cfg 0.0.332",
+ "ra_ap_hir_def 0.0.332",
+ "ra_ap_hir_expand 0.0.332",
+ "ra_ap_hir_ty 0.0.332",
+ "ra_ap_intern 0.0.332",
+ "ra_ap_span 0.0.332",
+ "ra_ap_stdx 0.0.332",
+ "ra_ap_syntax 0.0.332",
+ "ra_ap_tt 0.0.332",
  "rustc-hash 2.1.2",
  "serde_json",
  "smallvec",
@@ -1541,18 +1738,55 @@ dependencies = [
  "indexmap",
  "itertools",
  "la-arena",
- "ra-ap-rustc_abi",
- "ra-ap-rustc_parse_format",
- "ra_ap_base_db",
- "ra_ap_cfg",
- "ra_ap_hir_expand",
- "ra_ap_intern",
- "ra_ap_query-group-macro",
- "ra_ap_span",
- "ra_ap_stdx",
- "ra_ap_syntax",
- "ra_ap_syntax-bridge",
- "ra_ap_tt",
+ "ra-ap-rustc_abi 0.160.0",
+ "ra-ap-rustc_parse_format 0.160.0",
+ "ra_ap_base_db 0.0.331",
+ "ra_ap_cfg 0.0.331",
+ "ra_ap_hir_expand 0.0.331",
+ "ra_ap_intern 0.0.331",
+ "ra_ap_query-group-macro 0.0.331",
+ "ra_ap_span 0.0.331",
+ "ra_ap_stdx 0.0.331",
+ "ra_ap_syntax 0.0.331",
+ "ra_ap_syntax-bridge 0.0.331",
+ "ra_ap_tt 0.0.331",
+ "rustc-hash 2.1.2",
+ "rustc_apfloat",
+ "salsa",
+ "salsa-macros",
+ "smallvec",
+ "thin-vec",
+ "tracing",
+ "triomphe",
+]
+
+[[package]]
+name = "ra_ap_hir_def"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a36238dccb778d64b7d56c5481e43b3750313a9aea5c445dd2e9e6960d674b66"
+dependencies = [
+ "arrayvec",
+ "bitflags",
+ "cov-mark",
+ "drop_bomb",
+ "either",
+ "fst",
+ "indexmap",
+ "itertools",
+ "la-arena",
+ "ra-ap-rustc_abi 0.165.0",
+ "ra-ap-rustc_parse_format 0.165.0",
+ "ra_ap_base_db 0.0.332",
+ "ra_ap_cfg 0.0.332",
+ "ra_ap_hir_expand 0.0.332",
+ "ra_ap_intern 0.0.332",
+ "ra_ap_query-group-macro 0.0.332",
+ "ra_ap_span 0.0.332",
+ "ra_ap_stdx 0.0.332",
+ "ra_ap_syntax 0.0.332",
+ "ra_ap_syntax-bridge 0.0.332",
+ "ra_ap_tt 0.0.332",
  "rustc-hash 2.1.2",
  "rustc_apfloat",
  "salsa",
@@ -1572,17 +1806,46 @@ dependencies = [
  "cov-mark",
  "either",
  "itertools",
- "ra_ap_base_db",
- "ra_ap_cfg",
- "ra_ap_intern",
- "ra_ap_mbe",
- "ra_ap_parser",
- "ra_ap_query-group-macro",
- "ra_ap_span",
- "ra_ap_stdx",
- "ra_ap_syntax",
- "ra_ap_syntax-bridge",
- "ra_ap_tt",
+ "ra_ap_base_db 0.0.331",
+ "ra_ap_cfg 0.0.331",
+ "ra_ap_intern 0.0.331",
+ "ra_ap_mbe 0.0.331",
+ "ra_ap_parser 0.0.331",
+ "ra_ap_query-group-macro 0.0.331",
+ "ra_ap_span 0.0.331",
+ "ra_ap_stdx 0.0.331",
+ "ra_ap_syntax 0.0.331",
+ "ra_ap_syntax-bridge 0.0.331",
+ "ra_ap_tt 0.0.331",
+ "rustc-hash 2.1.2",
+ "salsa",
+ "salsa-macros",
+ "smallvec",
+ "thin-vec",
+ "tracing",
+ "triomphe",
+]
+
+[[package]]
+name = "ra_ap_hir_expand"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "070b4f7892fe5abb3287987e5943b2dafe99cf3a1d25d1a089a379febe95f2f6"
+dependencies = [
+ "cov-mark",
+ "either",
+ "itertools",
+ "ra_ap_base_db 0.0.332",
+ "ra_ap_cfg 0.0.332",
+ "ra_ap_intern 0.0.332",
+ "ra_ap_mbe 0.0.332",
+ "ra_ap_parser 0.0.332",
+ "ra_ap_query-group-macro 0.0.332",
+ "ra_ap_span 0.0.332",
+ "ra_ap_stdx 0.0.332",
+ "ra_ap_syntax 0.0.332",
+ "ra_ap_syntax-bridge 0.0.332",
+ "ra_ap_tt 0.0.332",
  "rustc-hash 2.1.2",
  "salsa",
  "salsa-macros",
@@ -1608,21 +1871,67 @@ dependencies = [
  "la-arena",
  "oorandom",
  "petgraph",
- "ra-ap-rustc_abi",
- "ra-ap-rustc_ast_ir",
- "ra-ap-rustc_index",
- "ra-ap-rustc_next_trait_solver",
- "ra-ap-rustc_pattern_analysis",
- "ra-ap-rustc_type_ir",
- "ra_ap_base_db",
- "ra_ap_hir_def",
- "ra_ap_hir_expand",
- "ra_ap_intern",
- "ra_ap_macros",
- "ra_ap_query-group-macro",
- "ra_ap_span",
- "ra_ap_stdx",
- "ra_ap_syntax",
+ "ra-ap-rustc_abi 0.160.0",
+ "ra-ap-rustc_ast_ir 0.160.0",
+ "ra-ap-rustc_index 0.160.0",
+ "ra-ap-rustc_next_trait_solver 0.160.0",
+ "ra-ap-rustc_pattern_analysis 0.160.0",
+ "ra-ap-rustc_type_ir 0.160.0",
+ "ra_ap_base_db 0.0.331",
+ "ra_ap_hir_def 0.0.331",
+ "ra_ap_hir_expand 0.0.331",
+ "ra_ap_intern 0.0.331",
+ "ra_ap_macros 0.0.331",
+ "ra_ap_query-group-macro 0.0.331",
+ "ra_ap_span 0.0.331",
+ "ra_ap_stdx 0.0.331",
+ "ra_ap_syntax 0.0.331",
+ "rustc-hash 2.1.2",
+ "rustc_apfloat",
+ "salsa",
+ "salsa-macros",
+ "serde",
+ "serde_derive",
+ "smallvec",
+ "thin-vec",
+ "tracing",
+ "tracing-subscriber",
+ "tracing-tree",
+ "triomphe",
+ "typed-arena",
+]
+
+[[package]]
+name = "ra_ap_hir_ty"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "81643d3d1466baf85115425a480db7475eeb7c53b476f3a848b3ccefcab48d1f"
+dependencies = [
+ "arrayvec",
+ "bitflags",
+ "cov-mark",
+ "either",
+ "ena",
+ "indexmap",
+ "itertools",
+ "la-arena",
+ "oorandom",
+ "petgraph",
+ "ra-ap-rustc_abi 0.165.0",
+ "ra-ap-rustc_ast_ir 0.165.0",
+ "ra-ap-rustc_index 0.165.0",
+ "ra-ap-rustc_next_trait_solver 0.165.0",
+ "ra-ap-rustc_pattern_analysis 0.165.0",
+ "ra-ap-rustc_type_ir 0.165.0",
+ "ra_ap_base_db 0.0.332",
+ "ra_ap_hir_def 0.0.332",
+ "ra_ap_hir_expand 0.0.332",
+ "ra_ap_intern 0.0.332",
+ "ra_ap_macros 0.0.332",
+ "ra_ap_query-group-macro 0.0.332",
+ "ra_ap_span 0.0.332",
+ "ra_ap_stdx 0.0.332",
+ "ra_ap_syntax 0.0.332",
  "rustc-hash 2.1.2",
  "rustc_apfloat",
  "salsa",
@@ -1640,9 +1949,9 @@ dependencies = [
 
 [[package]]
 name = "ra_ap_ide"
-version = "0.0.331"
+version = "0.0.332"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "31442e422bc662395f356f1b7e0027395a94f655cfc444c53c8baf876a077253"
+checksum = "3a4a87b0a2f31bb20941379acae23be7d8c7e21e03c2f15d5510fb99c55331df"
 dependencies = [
  "arrayvec",
  "cov-mark",
@@ -1653,19 +1962,19 @@ dependencies = [
  "oorandom",
  "pulldown-cmark",
  "pulldown-cmark-to-cmark",
- "ra_ap_cfg",
- "ra_ap_hir",
+ "ra_ap_cfg 0.0.332",
+ "ra_ap_hir 0.0.332",
  "ra_ap_ide_assists",
  "ra_ap_ide_completion",
- "ra_ap_ide_db",
+ "ra_ap_ide_db 0.0.332",
  "ra_ap_ide_diagnostics",
  "ra_ap_ide_ssr",
- "ra_ap_macros",
- "ra_ap_profile",
- "ra_ap_span",
- "ra_ap_stdx",
- "ra_ap_syntax",
- "ra_ap_toolchain",
+ "ra_ap_macros 0.0.332",
+ "ra_ap_profile 0.0.332",
+ "ra_ap_span 0.0.332",
+ "ra_ap_stdx 0.0.332",
+ "ra_ap_syntax 0.0.332",
+ "ra_ap_toolchain 0.0.332",
  "rustc_apfloat",
  "smallvec",
  "tracing",
@@ -1675,35 +1984,35 @@ dependencies = [
 
 [[package]]
 name = "ra_ap_ide_assists"
-version = "0.0.331"
+version = "0.0.332"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1633524e145ad3ed69f1be6f1af2d79ff300b6283a40c1c92e3ab1f3e0245d3c"
+checksum = "0147e471fcf9a773964f9a065fa525005003a00e58d52a633da0b49b0b5d3b9a"
 dependencies = [
  "cov-mark",
  "either",
  "itertools",
- "ra_ap_hir",
- "ra_ap_ide_db",
- "ra_ap_stdx",
- "ra_ap_syntax",
+ "ra_ap_hir 0.0.332",
+ "ra_ap_ide_db 0.0.332",
+ "ra_ap_stdx 0.0.332",
+ "ra_ap_syntax 0.0.332",
  "smallvec",
  "tracing",
 ]
 
 [[package]]
 name = "ra_ap_ide_completion"
-version = "0.0.331"
+version = "0.0.332"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ae11a1429638d14a5943f534614f5ac39d97f0b7d96ba095c75c343cd9bc9689"
+checksum = "d4d12269f7fa037952e9b373b447507f670141a4fae388a49fbe08736797e024"
 dependencies = [
  "cov-mark",
  "itertools",
- "ra_ap_base_db",
- "ra_ap_hir",
- "ra_ap_ide_db",
- "ra_ap_macros",
- "ra_ap_stdx",
- "ra_ap_syntax",
+ "ra_ap_base_db 0.0.332",
+ "ra_ap_hir 0.0.332",
+ "ra_ap_ide_db 0.0.332",
+ "ra_ap_macros 0.0.332",
+ "ra_ap_stdx 0.0.332",
+ "ra_ap_syntax 0.0.332",
  "smallvec",
  "tracing",
 ]
@@ -1724,17 +2033,53 @@ dependencies = [
  "line-index",
  "memchr",
  "nohash-hasher",
- "ra_ap_base_db",
- "ra_ap_hir",
- "ra_ap_macros",
- "ra_ap_parser",
- "ra_ap_profile",
- "ra_ap_span",
- "ra_ap_stdx",
- "ra_ap_syntax",
- "ra_ap_test_fixture",
- "ra_ap_test_utils",
- "ra_ap_vfs",
+ "ra_ap_base_db 0.0.331",
+ "ra_ap_hir 0.0.331",
+ "ra_ap_macros 0.0.331",
+ "ra_ap_parser 0.0.331",
+ "ra_ap_profile 0.0.331",
+ "ra_ap_span 0.0.331",
+ "ra_ap_stdx 0.0.331",
+ "ra_ap_syntax 0.0.331",
+ "ra_ap_test_fixture 0.0.331",
+ "ra_ap_test_utils 0.0.331",
+ "ra_ap_vfs 0.0.331",
+ "rayon",
+ "rustc-hash 2.1.2",
+ "salsa",
+ "salsa-macros",
+ "smallvec",
+ "tracing",
+ "triomphe",
+]
+
+[[package]]
+name = "ra_ap_ide_db"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e145b54be11c945ed2242fd08c4a6e9f2f1b4cec8348dba0aeeb1589c5afaf42"
+dependencies = [
+ "arrayvec",
+ "bitflags",
+ "cov-mark",
+ "crossbeam-channel",
+ "either",
+ "fst",
+ "itertools",
+ "line-index",
+ "memchr",
+ "nohash-hasher",
+ "ra_ap_base_db 0.0.332",
+ "ra_ap_hir 0.0.332",
+ "ra_ap_macros 0.0.332",
+ "ra_ap_parser 0.0.332",
+ "ra_ap_profile 0.0.332",
+ "ra_ap_span 0.0.332",
+ "ra_ap_stdx 0.0.332",
+ "ra_ap_syntax 0.0.332",
+ "ra_ap_test_fixture 0.0.332",
+ "ra_ap_test_utils 0.0.332",
+ "ra_ap_vfs 0.0.332",
  "rayon",
  "rustc-hash 2.1.2",
  "salsa",
@@ -1746,35 +2091,35 @@ dependencies = [
 
 [[package]]
 name = "ra_ap_ide_diagnostics"
-version = "0.0.331"
+version = "0.0.332"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "989f4946f92e3b83c53a4a1cbab07532fe2211c5eb8301faea684979ddb300f5"
+checksum = "ff6b25e1a75861e86ed6f0d23053915af8fe3851b0c57310a0b46711fe974137"
 dependencies = [
  "cov-mark",
  "either",
  "itertools",
- "ra_ap_cfg",
- "ra_ap_hir",
- "ra_ap_ide_db",
- "ra_ap_paths",
- "ra_ap_stdx",
- "ra_ap_syntax",
+ "ra_ap_cfg 0.0.332",
+ "ra_ap_hir 0.0.332",
+ "ra_ap_ide_db 0.0.332",
+ "ra_ap_paths 0.0.332",
+ "ra_ap_stdx 0.0.332",
+ "ra_ap_syntax 0.0.332",
  "serde_json",
  "tracing",
 ]
 
 [[package]]
 name = "ra_ap_ide_ssr"
-version = "0.0.331"
+version = "0.0.332"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6be60e5436583a6ac94abfbfefaf54c531f2f053c23a8876366b992846a77290"
+checksum = "e4c441a46b404b953a5ec80f33171dfbd7be60a9688f6cdfde4f42fe61fd95e2"
 dependencies = [
  "cov-mark",
  "itertools",
- "ra_ap_hir",
- "ra_ap_ide_db",
- "ra_ap_parser",
- "ra_ap_syntax",
+ "ra_ap_hir 0.0.332",
+ "ra_ap_ide_db 0.0.332",
+ "ra_ap_parser 0.0.332",
+ "ra_ap_syntax 0.0.332",
 ]
 
 [[package]]
@@ -1791,6 +2136,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "ra_ap_intern"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9b84d822c58e9a14193acad6a6bec7126889dfc346a92cbc970704df10552011"
+dependencies = [
+ "arrayvec",
+ "dashmap",
+ "hashbrown 0.14.5",
+ "rayon",
+ "rustc-hash 2.1.2",
+ "triomphe",
+]
+
+[[package]]
 name = "ra_ap_load-cargo"
 version = "0.0.331"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1799,14 +2158,14 @@ dependencies = [
  "anyhow",
  "crossbeam-channel",
  "itertools",
- "ra_ap_hir_expand",
- "ra_ap_ide_db",
- "ra_ap_intern",
+ "ra_ap_hir_expand 0.0.331",
+ "ra_ap_ide_db 0.0.331",
+ "ra_ap_intern 0.0.331",
  "ra_ap_proc_macro_api",
  "ra_ap_project_model",
- "ra_ap_span",
- "ra_ap_tt",
- "ra_ap_vfs",
+ "ra_ap_span 0.0.331",
+ "ra_ap_tt 0.0.331",
+ "ra_ap_vfs 0.0.331",
  "ra_ap_vfs-notify",
  "tracing",
 ]
@@ -1824,6 +2183,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "ra_ap_macros"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d8b3fa3c6c0e0cbbf9beee04d043921a9c7ff44c24b25536c1cfabd9dabca352"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+ "synstructure",
+]
+
+[[package]]
 name = "ra_ap_mbe"
 version = "0.0.331"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1832,13 +2203,34 @@ dependencies = [
  "arrayvec",
  "bitflags",
  "cov-mark",
- "ra-ap-rustc_lexer",
- "ra_ap_intern",
- "ra_ap_parser",
- "ra_ap_span",
- "ra_ap_stdx",
- "ra_ap_syntax-bridge",
- "ra_ap_tt",
+ "ra-ap-rustc_lexer 0.160.0",
+ "ra_ap_intern 0.0.331",
+ "ra_ap_parser 0.0.331",
+ "ra_ap_span 0.0.331",
+ "ra_ap_stdx 0.0.331",
+ "ra_ap_syntax-bridge 0.0.331",
+ "ra_ap_tt 0.0.331",
+ "rustc-hash 2.1.2",
+ "salsa",
+ "smallvec",
+]
+
+[[package]]
+name = "ra_ap_mbe"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "04944349ece228222318b404e85de85e8e11052704f87f183c4f0d332838b703"
+dependencies = [
+ "arrayvec",
+ "bitflags",
+ "cov-mark",
+ "ra-ap-rustc_lexer 0.165.0",
+ "ra_ap_intern 0.0.332",
+ "ra_ap_parser 0.0.332",
+ "ra_ap_span 0.0.332",
+ "ra_ap_stdx 0.0.332",
+ "ra_ap_syntax-bridge 0.0.332",
+ "ra_ap_tt 0.0.332",
  "rustc-hash 2.1.2",
  "salsa",
  "smallvec",
@@ -1851,8 +2243,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "607f4f9680c033af2712bb4fbd874904abf73f062224f96a13493f23911356b6"
 dependencies = [
  "drop_bomb",
- "ra-ap-rustc_lexer",
- "ra_ap_edition",
+ "ra-ap-rustc_lexer 0.160.0",
+ "ra_ap_edition 0.0.331",
+ "rustc-literal-escaper 0.0.4",
+ "tracing",
+ "winnow 0.7.15",
+]
+
+[[package]]
+name = "ra_ap_parser"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9d9ea10572fab9a74606c287b5aa815a0733307bc03eee160aeeaee188422a9f"
+dependencies = [
+ "drop_bomb",
+ "ra-ap-rustc_lexer 0.165.0",
+ "ra_ap_edition 0.0.332",
  "rustc-literal-escaper 0.0.4",
  "tracing",
  "winnow 0.7.15",
@@ -1868,6 +2274,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "ra_ap_paths"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9db2538d3758164fe316b6f4c0fdff8b0f77dc3e62d9aeb950ffa812f72d9b1d"
+dependencies = [
+ "camino",
+]
+
+[[package]]
 name = "ra_ap_proc_macro_api"
 version = "0.0.331"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1875,11 +2290,11 @@ checksum = "39ae7528e7a5c0313ddf1460907e0b79cc236284f107ba3ab34014b4f430f6bc"
 dependencies = [
  "indexmap",
  "postcard",
- "ra_ap_intern",
- "ra_ap_paths",
- "ra_ap_span",
- "ra_ap_stdx",
- "ra_ap_tt",
+ "ra_ap_intern 0.0.331",
+ "ra_ap_paths 0.0.331",
+ "ra_ap_span 0.0.331",
+ "ra_ap_stdx 0.0.331",
+ "ra_ap_tt 0.0.331",
  "rayon",
  "rustc-hash 2.1.2",
  "semver",
@@ -1902,6 +2317,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "ra_ap_profile"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "abaeba16d2b1ce15f2ca3ba30c7a94a8663d0a2d321d66b6ba07ecf684ad782a"
+dependencies = [
+ "cfg-if",
+ "libc",
+ "perf-event",
+ "windows-sys 0.61.2",
+]
+
+[[package]]
 name = "ra_ap_project_model"
 version = "0.0.331"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1911,13 +2338,13 @@ dependencies = [
  "cargo_metadata",
  "itertools",
  "la-arena",
- "ra_ap_base_db",
- "ra_ap_cfg",
- "ra_ap_intern",
- "ra_ap_paths",
- "ra_ap_span",
- "ra_ap_stdx",
- "ra_ap_toolchain",
+ "ra_ap_base_db 0.0.331",
+ "ra_ap_cfg 0.0.331",
+ "ra_ap_intern 0.0.331",
+ "ra_ap_paths 0.0.331",
+ "ra_ap_span 0.0.331",
+ "ra_ap_stdx 0.0.331",
+ "ra_ap_toolchain 0.0.331",
  "rustc-hash 2.1.2",
  "semver",
  "serde",
@@ -1941,6 +2368,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "ra_ap_query-group-macro"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "86a843e3bd440d0efaaf970db48907f47821b930ede746b46fa4a6bb2dc8753d"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "ra_ap_span"
 version = "0.0.331"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1948,9 +2386,25 @@ checksum = "8332647ce87e69f764e58a69042ee2ee29470dbc2bca8669f97f8d610beaa1f7"
 dependencies = [
  "hashbrown 0.14.5",
  "la-arena",
- "ra_ap_stdx",
- "ra_ap_syntax",
- "ra_ap_vfs",
+ "ra_ap_stdx 0.0.331",
+ "ra_ap_syntax 0.0.331",
+ "ra_ap_vfs 0.0.331",
+ "rustc-hash 2.1.2",
+ "salsa",
+ "text-size",
+]
+
+[[package]]
+name = "ra_ap_span"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "656df0af8046c80cc1562ced84a5461bd09b511349f173a93e92e87c03c9a7f7"
+dependencies = [
+ "hashbrown 0.14.5",
+ "la-arena",
+ "ra_ap_stdx 0.0.332",
+ "ra_ap_syntax 0.0.332",
+ "ra_ap_vfs 0.0.332",
  "rustc-hash 2.1.2",
  "salsa",
  "text-size",
@@ -1973,6 +2427,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "ra_ap_stdx"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f9b22de4468431433c5d76d2f5bcf0e39830ed87456bb6bea2c24d774e9ffc9d"
+dependencies = [
+ "crossbeam-channel",
+ "crossbeam-utils",
+ "itertools",
+ "jod-thread",
+ "libc",
+ "miow",
+ "tracing",
+ "windows-sys 0.61.2",
+]
+
+[[package]]
 name = "ra_ap_syntax"
 version = "0.0.331"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1980,8 +2450,27 @@ checksum = "3a584372630d85436a206d362b26e5156367f348043151b132011f360c63fa18"
 dependencies = [
  "either",
  "itertools",
- "ra_ap_parser",
- "ra_ap_stdx",
+ "ra_ap_parser 0.0.331",
+ "ra_ap_stdx 0.0.331",
+ "rowan",
+ "rustc-hash 2.1.2",
+ "rustc-literal-escaper 0.0.4",
+ "smallvec",
+ "smol_str",
+ "tracing",
+ "triomphe",
+]
+
+[[package]]
+name = "ra_ap_syntax"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4fba746bd7e6db6cb2fa41cf071610436fff100f9a1c93807efb894bb9304ace"
+dependencies = [
+ "either",
+ "itertools",
+ "ra_ap_parser 0.0.332",
+ "ra_ap_stdx 0.0.332",
  "rowan",
  "rustc-hash 2.1.2",
  "rustc-literal-escaper 0.0.4",
@@ -1997,12 +2486,27 @@ version = "0.0.331"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1985d0586c81dbf00ced077dc74accce8b24c2eadb2b70f997041794b1a76155"
 dependencies = [
- "ra_ap_intern",
- "ra_ap_parser",
- "ra_ap_span",
- "ra_ap_stdx",
- "ra_ap_syntax",
- "ra_ap_tt",
+ "ra_ap_intern 0.0.331",
+ "ra_ap_parser 0.0.331",
+ "ra_ap_span 0.0.331",
+ "ra_ap_stdx 0.0.331",
+ "ra_ap_syntax 0.0.331",
+ "ra_ap_tt 0.0.331",
+ "rustc-hash 2.1.2",
+]
+
+[[package]]
+name = "ra_ap_syntax-bridge"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3b4c359051661664e600f2561c8c16f695518eebe504d8b73b42f0aa970befc3"
+dependencies = [
+ "ra_ap_intern 0.0.332",
+ "ra_ap_parser 0.0.332",
+ "ra_ap_span 0.0.332",
+ "ra_ap_stdx 0.0.332",
+ "ra_ap_syntax 0.0.332",
+ "ra_ap_tt 0.0.332",
  "rustc-hash 2.1.2",
 ]
 
@@ -2012,15 +2516,33 @@ version = "0.0.331"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ce109a8fac5fc8c8e6ab8330a166fc987ef2315e36d84a6e002d3fa66746b186"
 dependencies = [
- "ra_ap_base_db",
- "ra_ap_cfg",
- "ra_ap_hir_expand",
- "ra_ap_intern",
- "ra_ap_paths",
- "ra_ap_span",
- "ra_ap_stdx",
- "ra_ap_test_utils",
- "ra_ap_tt",
+ "ra_ap_base_db 0.0.331",
+ "ra_ap_cfg 0.0.331",
+ "ra_ap_hir_expand 0.0.331",
+ "ra_ap_intern 0.0.331",
+ "ra_ap_paths 0.0.331",
+ "ra_ap_span 0.0.331",
+ "ra_ap_stdx 0.0.331",
+ "ra_ap_test_utils 0.0.331",
+ "ra_ap_tt 0.0.331",
+ "triomphe",
+]
+
+[[package]]
+name = "ra_ap_test_fixture"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "42d0e1d465619a9dcd1ea91b19e4b1785bc17ed76b0f89b72b3195ed154a3c5c"
+dependencies = [
+ "ra_ap_base_db 0.0.332",
+ "ra_ap_cfg 0.0.332",
+ "ra_ap_hir_expand 0.0.332",
+ "ra_ap_intern 0.0.332",
+ "ra_ap_paths 0.0.332",
+ "ra_ap_span 0.0.332",
+ "ra_ap_stdx 0.0.332",
+ "ra_ap_test_utils 0.0.332",
+ "ra_ap_tt 0.0.332",
  "triomphe",
 ]
 
@@ -2031,9 +2553,23 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "18ee12f1fccd413eaf534d28e07c0402a610a3f17d77de5383a9c86784159445"
 dependencies = [
  "dissimilar",
- "ra_ap_paths",
- "ra_ap_profile",
- "ra_ap_stdx",
+ "ra_ap_paths 0.0.331",
+ "ra_ap_profile 0.0.331",
+ "ra_ap_stdx 0.0.331",
+ "rustc-hash 2.1.2",
+ "text-size",
+]
+
+[[package]]
+name = "ra_ap_test_utils"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ff8dbe23bec356bd8dbb310651df26e54d320b0c945813b74e7ce81bd77192c3"
+dependencies = [
+ "dissimilar",
+ "ra_ap_paths 0.0.332",
+ "ra_ap_profile 0.0.332",
+ "ra_ap_stdx 0.0.332",
  "rustc-hash 2.1.2",
  "text-size",
 ]
@@ -2049,6 +2585,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "ra_ap_toolchain"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "83951ef2a001369d5f32112c55cf79c2eb6b9c7d9d158c513241aac15abb3842"
+dependencies = [
+ "camino",
+ "home",
+]
+
+[[package]]
 name = "ra_ap_tt"
 version = "0.0.331"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2056,10 +2602,26 @@ checksum = "0df79a4b9821487ecb3be9ada3f8a4432e59d329dcc488a7a1d6a36686a0b7bb"
 dependencies = [
  "arrayvec",
  "indexmap",
- "ra-ap-rustc_lexer",
- "ra_ap_intern",
- "ra_ap_span",
- "ra_ap_stdx",
+ "ra-ap-rustc_lexer 0.160.0",
+ "ra_ap_intern 0.0.331",
+ "ra_ap_span 0.0.331",
+ "ra_ap_stdx 0.0.331",
+ "rustc-hash 2.1.2",
+ "text-size",
+]
+
+[[package]]
+name = "ra_ap_tt"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ec856adba55c7b9ca3cf415fe85f2aeb738c9d4a74aed2a5a804eff22e4b9a7a"
+dependencies = [
+ "arrayvec",
+ "indexmap",
+ "ra-ap-rustc_lexer 0.165.0",
+ "ra_ap_intern 0.0.332",
+ "ra_ap_span 0.0.332",
+ "ra_ap_stdx 0.0.332",
  "rustc-hash 2.1.2",
  "text-size",
 ]
@@ -2074,8 +2636,24 @@ dependencies = [
  "fst",
  "indexmap",
  "nohash-hasher",
- "ra_ap_paths",
- "ra_ap_stdx",
+ "ra_ap_paths 0.0.331",
+ "ra_ap_stdx 0.0.331",
+ "rustc-hash 2.1.2",
+ "tracing",
+]
+
+[[package]]
+name = "ra_ap_vfs"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "51c7d6d7846aebdd4636a4383c5202223eeac6fb2823796e5649c0f6473fa371"
+dependencies = [
+ "crossbeam-channel",
+ "fst",
+ "indexmap",
+ "nohash-hasher",
+ "ra_ap_paths 0.0.332",
+ "ra_ap_stdx 0.0.332",
  "rustc-hash 2.1.2",
  "tracing",
 ]
@@ -2088,9 +2666,9 @@ checksum = "950f70a43d62aabe8ea76c12b1407f96870b1d6414eb3d83a686cd015e81039e"
 dependencies = [
  "crossbeam-channel",
  "notify",
- "ra_ap_paths",
- "ra_ap_stdx",
- "ra_ap_vfs",
+ "ra_ap_paths 0.0.331",
+ "ra_ap_stdx 0.0.331",
+ "ra_ap_vfs 0.0.331",
  "rayon",
  "rustc-hash 2.1.2",
  "tracing",
