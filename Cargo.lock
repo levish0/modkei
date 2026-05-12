@@ -1053,7 +1053,7 @@ dependencies = [
  "ra_ap_load-cargo",
  "ra_ap_project_model",
  "ra_ap_syntax",
- "ra_ap_vfs",
+ "ra_ap_vfs 0.0.332",
  "rayon",
  "serde",
  "serde_json",
@@ -1470,7 +1470,7 @@ dependencies = [
  "ra_ap_query-group-macro",
  "ra_ap_span",
  "ra_ap_syntax",
- "ra_ap_vfs",
+ "ra_ap_vfs 0.0.331",
  "rustc-hash 2.1.2",
  "salsa",
  "salsa-macros",
@@ -1516,7 +1516,7 @@ dependencies = [
  "ra_ap_hir_ty",
  "ra_ap_intern",
  "ra_ap_span",
- "ra_ap_stdx",
+ "ra_ap_stdx 0.0.331",
  "ra_ap_syntax",
  "ra_ap_tt",
  "rustc-hash 2.1.2",
@@ -1549,7 +1549,7 @@ dependencies = [
  "ra_ap_intern",
  "ra_ap_query-group-macro",
  "ra_ap_span",
- "ra_ap_stdx",
+ "ra_ap_stdx 0.0.331",
  "ra_ap_syntax",
  "ra_ap_syntax-bridge",
  "ra_ap_tt",
@@ -1579,7 +1579,7 @@ dependencies = [
  "ra_ap_parser",
  "ra_ap_query-group-macro",
  "ra_ap_span",
- "ra_ap_stdx",
+ "ra_ap_stdx 0.0.331",
  "ra_ap_syntax",
  "ra_ap_syntax-bridge",
  "ra_ap_tt",
@@ -1621,7 +1621,7 @@ dependencies = [
  "ra_ap_macros",
  "ra_ap_query-group-macro",
  "ra_ap_span",
- "ra_ap_stdx",
+ "ra_ap_stdx 0.0.331",
  "ra_ap_syntax",
  "rustc-hash 2.1.2",
  "rustc_apfloat",
@@ -1663,7 +1663,7 @@ dependencies = [
  "ra_ap_macros",
  "ra_ap_profile",
  "ra_ap_span",
- "ra_ap_stdx",
+ "ra_ap_stdx 0.0.331",
  "ra_ap_syntax",
  "ra_ap_toolchain",
  "rustc_apfloat",
@@ -1684,7 +1684,7 @@ dependencies = [
  "itertools",
  "ra_ap_hir",
  "ra_ap_ide_db",
- "ra_ap_stdx",
+ "ra_ap_stdx 0.0.331",
  "ra_ap_syntax",
  "smallvec",
  "tracing",
@@ -1702,7 +1702,7 @@ dependencies = [
  "ra_ap_hir",
  "ra_ap_ide_db",
  "ra_ap_macros",
- "ra_ap_stdx",
+ "ra_ap_stdx 0.0.331",
  "ra_ap_syntax",
  "smallvec",
  "tracing",
@@ -1730,11 +1730,11 @@ dependencies = [
  "ra_ap_parser",
  "ra_ap_profile",
  "ra_ap_span",
- "ra_ap_stdx",
+ "ra_ap_stdx 0.0.331",
  "ra_ap_syntax",
  "ra_ap_test_fixture",
  "ra_ap_test_utils",
- "ra_ap_vfs",
+ "ra_ap_vfs 0.0.331",
  "rayon",
  "rustc-hash 2.1.2",
  "salsa",
@@ -1756,8 +1756,8 @@ dependencies = [
  "ra_ap_cfg",
  "ra_ap_hir",
  "ra_ap_ide_db",
- "ra_ap_paths",
- "ra_ap_stdx",
+ "ra_ap_paths 0.0.331",
+ "ra_ap_stdx 0.0.331",
  "ra_ap_syntax",
  "serde_json",
  "tracing",
@@ -1806,7 +1806,7 @@ dependencies = [
  "ra_ap_project_model",
  "ra_ap_span",
  "ra_ap_tt",
- "ra_ap_vfs",
+ "ra_ap_vfs 0.0.331",
  "ra_ap_vfs-notify",
  "tracing",
 ]
@@ -1836,7 +1836,7 @@ dependencies = [
  "ra_ap_intern",
  "ra_ap_parser",
  "ra_ap_span",
- "ra_ap_stdx",
+ "ra_ap_stdx 0.0.331",
  "ra_ap_syntax-bridge",
  "ra_ap_tt",
  "rustc-hash 2.1.2",
@@ -1868,6 +1868,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "ra_ap_paths"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9db2538d3758164fe316b6f4c0fdff8b0f77dc3e62d9aeb950ffa812f72d9b1d"
+dependencies = [
+ "camino",
+]
+
+[[package]]
 name = "ra_ap_proc_macro_api"
 version = "0.0.331"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1876,9 +1885,9 @@ dependencies = [
  "indexmap",
  "postcard",
  "ra_ap_intern",
- "ra_ap_paths",
+ "ra_ap_paths 0.0.331",
  "ra_ap_span",
- "ra_ap_stdx",
+ "ra_ap_stdx 0.0.331",
  "ra_ap_tt",
  "rayon",
  "rustc-hash 2.1.2",
@@ -1914,9 +1923,9 @@ dependencies = [
  "ra_ap_base_db",
  "ra_ap_cfg",
  "ra_ap_intern",
- "ra_ap_paths",
+ "ra_ap_paths 0.0.331",
  "ra_ap_span",
- "ra_ap_stdx",
+ "ra_ap_stdx 0.0.331",
  "ra_ap_toolchain",
  "rustc-hash 2.1.2",
  "semver",
@@ -1948,9 +1957,9 @@ checksum = "8332647ce87e69f764e58a69042ee2ee29470dbc2bca8669f97f8d610beaa1f7"
 dependencies = [
  "hashbrown 0.14.5",
  "la-arena",
- "ra_ap_stdx",
+ "ra_ap_stdx 0.0.331",
  "ra_ap_syntax",
- "ra_ap_vfs",
+ "ra_ap_vfs 0.0.331",
  "rustc-hash 2.1.2",
  "salsa",
  "text-size",
@@ -1973,6 +1982,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "ra_ap_stdx"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f9b22de4468431433c5d76d2f5bcf0e39830ed87456bb6bea2c24d774e9ffc9d"
+dependencies = [
+ "crossbeam-channel",
+ "crossbeam-utils",
+ "itertools",
+ "jod-thread",
+ "libc",
+ "miow",
+ "tracing",
+ "windows-sys 0.61.2",
+]
+
+[[package]]
 name = "ra_ap_syntax"
 version = "0.0.331"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1981,7 +2006,7 @@ dependencies = [
  "either",
  "itertools",
  "ra_ap_parser",
- "ra_ap_stdx",
+ "ra_ap_stdx 0.0.331",
  "rowan",
  "rustc-hash 2.1.2",
  "rustc-literal-escaper 0.0.4",
@@ -2000,7 +2025,7 @@ dependencies = [
  "ra_ap_intern",
  "ra_ap_parser",
  "ra_ap_span",
- "ra_ap_stdx",
+ "ra_ap_stdx 0.0.331",
  "ra_ap_syntax",
  "ra_ap_tt",
  "rustc-hash 2.1.2",
@@ -2016,9 +2041,9 @@ dependencies = [
  "ra_ap_cfg",
  "ra_ap_hir_expand",
  "ra_ap_intern",
- "ra_ap_paths",
+ "ra_ap_paths 0.0.331",
  "ra_ap_span",
- "ra_ap_stdx",
+ "ra_ap_stdx 0.0.331",
  "ra_ap_test_utils",
  "ra_ap_tt",
  "triomphe",
@@ -2031,9 +2056,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "18ee12f1fccd413eaf534d28e07c0402a610a3f17d77de5383a9c86784159445"
 dependencies = [
  "dissimilar",
- "ra_ap_paths",
+ "ra_ap_paths 0.0.331",
  "ra_ap_profile",
- "ra_ap_stdx",
+ "ra_ap_stdx 0.0.331",
  "rustc-hash 2.1.2",
  "text-size",
 ]
@@ -2059,7 +2084,7 @@ dependencies = [
  "ra-ap-rustc_lexer",
  "ra_ap_intern",
  "ra_ap_span",
- "ra_ap_stdx",
+ "ra_ap_stdx 0.0.331",
  "rustc-hash 2.1.2",
  "text-size",
 ]
@@ -2074,8 +2099,24 @@ dependencies = [
  "fst",
  "indexmap",
  "nohash-hasher",
- "ra_ap_paths",
- "ra_ap_stdx",
+ "ra_ap_paths 0.0.331",
+ "ra_ap_stdx 0.0.331",
+ "rustc-hash 2.1.2",
+ "tracing",
+]
+
+[[package]]
+name = "ra_ap_vfs"
+version = "0.0.332"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "51c7d6d7846aebdd4636a4383c5202223eeac6fb2823796e5649c0f6473fa371"
+dependencies = [
+ "crossbeam-channel",
+ "fst",
+ "indexmap",
+ "nohash-hasher",
+ "ra_ap_paths 0.0.332",
+ "ra_ap_stdx 0.0.332",
  "rustc-hash 2.1.2",
  "tracing",
 ]
@@ -2088,9 +2129,9 @@ checksum = "950f70a43d62aabe8ea76c12b1407f96870b1d6414eb3d83a686cd015e81039e"
 dependencies = [
  "crossbeam-channel",
  "notify",
- "ra_ap_paths",
- "ra_ap_stdx",
- "ra_ap_vfs",
+ "ra_ap_paths 0.0.331",
+ "ra_ap_stdx 0.0.331",
+ "ra_ap_vfs 0.0.331",
  "rayon",
  "rustc-hash 2.1.2",
  "tracing",
